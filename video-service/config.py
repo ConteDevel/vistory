@@ -1,4 +1,4 @@
-'''
+"""
     This file is part of Vistory.
 
     Vistory is free software: you can redistribute it and/or modify
@@ -13,14 +13,11 @@
 
     You should have received a copy of the GNU General Public License
     along with Vistory.  If not, see <http://www.gnu.org/licenses/>.
-'''
+"""
 import os
 
-S3_BUCKET   = os.environ['S3_BUCKET']
-S3_KEY      = os.environ['S3_KEY']
-S3_SECRET   = os.environ['S3_SECRET']
-S3_LOCATION = 'http://{}.s3.amazonaws.com/'.format(S3_BUCKET)
+AWS_S3_BUCKET = os.environ['AWS_S3_BUCKET']
+AWS_S3_LOCATION = 'http://{}.s3.amazonaws.com/'.format(AWS_S3_BUCKET)
 
-SECRET_KEY  = os.random(32)
-DEBUG       = True
-PORT        = 5000
+DEBUG = True
+PORT = 5000
