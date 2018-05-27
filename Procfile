@@ -1,1 +1,1 @@
-web: gunicorn auth-vistory:app
+web: gunicorn vistory-auth:app
