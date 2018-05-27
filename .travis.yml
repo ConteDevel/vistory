@@ -1,13 +1,11 @@
 matrix:
   include:
     - language: python
-      python: 3.6
-      env:
-        - FLASK=0.12.2
+      python: 
+        - 3.6
       # command to install dependencies
       install:
-        - pip install flask==$FLASK
-        - pip install -e .
+        - pip install -r auth/requirements/prod.txt
       before_script:
         - cd auth
       # command to run tests
