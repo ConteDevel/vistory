@@ -21,3 +21,10 @@ AWS_S3_LOCATION = 'http://{}.s3.amazonaws.com/'.format(AWS_S3_BUCKET)
 
 DEBUG = True
 PORT = 5000
+
+ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png']
+FILE_CONTENT_TYPES = {
+    'jpg': 'image/jpeg',
+    'jpeg': 'image/jpeg',
+    'png': 'image/png'
+}
