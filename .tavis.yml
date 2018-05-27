@@ -1,19 +1,19 @@
 matrix:
-    include:
-      - language: python
-        python: 3.6
-        env:
-          - FLASK=0.12.2
-        # command to install dependencies
-        install:
-          - pip install flask==$FLASK
-          - pip install -e .
-        before_script:
-          - cd auth
-        # command to run tests
-        script: true
-        deploy:
-            provider: heroku
-            api_key:
-                secure: $AUTH_HEROKU_API_KEY
-            app: vistory-auth
+  include:
+    - language: python
+      python: 3.6
+      env:
+        - FLASK=0.12.2
+      # command to install dependencies
+      install:
+        - pip install flask==$FLASK
+        - pip install -e .
+      before_script:
+        - cd auth
+      # command to run tests
+      script: true
+      deploy:
+        provider: heroku
+        api_key:
+          secure: $AUTH_HEROKU_API_KEY
+        app: "vistory-auth"
