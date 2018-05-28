@@ -2,3 +2,4 @@ client/
 env/
 *__pycache__
 *.idea/
+*.sock
