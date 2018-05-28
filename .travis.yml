@@ -7,7 +7,7 @@ matrix:
       install:
         - pip install -r auth/requirements/prod.txt
       before_script:
-        - cd vistory-auth
+        - cd auth
       # command to run tests
       script: true
       deploy:
