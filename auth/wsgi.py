@@ -1,4 +1,4 @@
-from viauth import application
+from viauth import app
 
 if __name__ == "__main__":
-    application.run()
+    app.run()
