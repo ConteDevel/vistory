@@ -1,12 +1,10 @@
-from flask import Flask
-
-app = Flask(__name__)
+from website.app import create_app
 
 
-@app.route('/')
-def hello_world():
-    return 'Hello World!'
+app = create_app({'SQLALCHEMY_TRACK_MODIFICATIONS': False})
 
 
-if __name__ == '__main__':
-    app.run()
+@app.cli.command()
+def initdb():
+    from website.models import db
+    db.create_all()
