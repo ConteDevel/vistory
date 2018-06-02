@@ -1,7 +1,7 @@
 from website.app import create_app
 
 
-app = create_app({'SQLALCHEMY_TRACK_MODIFICATIONS': False})
+app = create_app()
 
 
 @app.cli.command()

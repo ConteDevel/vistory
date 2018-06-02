@@ -16,6 +16,9 @@
 """
 from os import getenv
 
+SECRET_KEY = getenv('VIAUTH_SECRET_KEY', 'secret')
+SQLALCHEMY_TRACK_MODIFICATIONS = False
+
 DATABASE = {
     'HOST': getenv('VIAUTH_DB_HOST', 'localhost'),
     'PORT': getenv('VIAUTH_DB_PORT', '5432'),
