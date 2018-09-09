@@ -1,22 +1,18 @@
+{% extends "base.html" %}
+{% block html_class %}vi-color-html{% endblock %}
+{% block html_style %}
+    background-image: url('{{ url_for('static', filename='img/bg_main.jpg') }}');
+{% endblock %}
+{% block title %}Vistory Auth{% endblock %}
+{% block content %}
 {% if user %}
-<style>pre{white-space:wrap}</style>
-<div>
-        Logged in as <strong>{{user}}</strong> (<a href="{{ url_for('.logout') }}">Log Out</a>)
-</div>
-
-{% for client in clients %}
-<pre>
-{{ client.client_info|tojson }}
-{{ client.client_metadata|tojson }}
-</pre>
-<hr>
-{% endfor %}
-
-<br><a href="{{ url_for('.create_client') }}">Create Client</a>
-
 {% else %}
-<form action="" method="post">
-    <input type="text" name="username" placeholder="username">
-    <button type="submit">Login / Signup</button>
-</form>
+    <div class="vi-aligner">
+        <div class="columns is-centered vi-fit-width">
+            <div class="column is-4-desktop is-half-tablet is-full-mobile">
+            {% include 'login_form.html' %}
+            </div>
+        </div>
+    </div>
 {% endif %}
+{% endblock %}

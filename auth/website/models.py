@@ -12,59 +12,70 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Vistory.  If not, see <http://www.gnu.org/licenses/>.
+    along with Vistory. If not, see <http://www.gnu.org/licenses/>.
 """
-import time
+import datetime
+
+from authlib.flask.oauth2.sqla import OAuth2ClientMixin, OAuth2TokenMixin, OAuth2AuthorizationCodeMixin
 from flask_sqlalchemy import SQLAlchemy
-from authlib.flask.oauth2.sqla import (
-    OAuth2ClientMixin,
-    OAuth2AuthorizationCodeMixin,
-    OAuth2TokenMixin,
-)
 
 db = SQLAlchemy()
 
 
-class User(db.Model):
+class BaseMixin(object):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(40), unique=True)
+    created_at = db.Column('created_at', db.DateTime, nullable=False)
+    updated_at = db.Column('updated_at', db.DateTime, nullable=False)
 
-    def __str__(self):
-        return self.username
+    @staticmethod
+    def create_time(mapper, connection, instance):
+        now = datetime.datetime.utcnow()
+        instance.created_at = now
+        instance.updated_at = now
+
+    @staticmethod
+    def update_time(mapper, connection, instance):
+        now = datetime.datetime.utcnow()
+        instance.updated_at = now
+
+    @classmethod
+    def register(cls):
+        db.event.listen(cls, 'before_insert', cls.create_time)
+        db.event.listen(cls, 'before_update', cls.update_time)
+
+
+class User(db.Model, BaseMixin):
+    __tablename__ = 'users'
+    email = db.Column(db.String(255), nullable=False)
+    name = db.Column(db.String(512), nullable=False)
+    birthdate = db.Column(db.Date, nullable=False)
+    avatar_url = db.Column(db.String(1024))
+    hash = db.Column(db.String(32), nullable=False)
+    salt = db.Column(db.String(32), nullable=False)
+    lock = db.Column(db.Boolean, default=False, nullable=False)
+    deleted = db.Column(db.Boolean, default=True, nullable=False)
 
     def get_user_id(self):
         return self.id
 
-    def check_password(self, password):
-        return password == 'valid'
 
-
-class OAuth2Client(db.Model, OAuth2ClientMixin):
-    __tablename__ = 'oauth2_client'
-
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(
-        db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
+class Client(db.Model, OAuth2ClientMixin, BaseMixin):
+    __tablename__ = 'clients'
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE', onupdate='CASCADE'))
     user = db.relationship('User')
 
 
-class OAuth2AuthorizationCode(db.Model, OAuth2AuthorizationCodeMixin):
-    __tablename__ = 'oauth2_code'
-
+class Token(db.Model, OAuth2TokenMixin):
+    __tablename__ = 'tokens'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(
-        db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE', onupdate='CASCADE'))
     user = db.relationship('User')
 
 
-class OAuth2Token(db.Model, OAuth2TokenMixin):
-    __tablename__ = 'oauth2_token'
-
+class AuthorizationCode(db.Model, OAuth2AuthorizationCodeMixin):
+    __tablename__ = 'authorization_codes'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(
-        db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
+        db.Integer, db.ForeignKey('users.id', ondelete='CASCADE', onupdate='CASCADE')
+    )
     user = db.relationship('User')
-
-    def is_refresh_token_expired(self):
-        expires_at = self.issued_at + self.expires_in * 2
-        return expires_at < time.time()

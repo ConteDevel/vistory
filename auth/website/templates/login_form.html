@@ -1,0 +1,39 @@
+<div class="box">
+    <nav class="level">
+      <div class="level-item has-text-centered">
+            <img class="vi-logo" src="{{ url_for('static', filename='img/ic_logo.png') }}">
+      </div>
+    </nav>
+    <h1 class="title is-0-desktop is-3-mobile has-text-centered"><span class="has-text-primary">Vi</span>story</h1>
+    <form action="auth" method="post" class="vi-offset-top-sm">
+        <div class="field">
+            <div class="control has-icons-left">
+                <input class="input" type="email" placeholder="Email">
+                <span class="icon is-small is-left">
+                    <i class="fas fa-envelope"></i>
+                </span>
+            </div>
+        </div>
+        <div class="field">
+            <div class="control has-icons-left">
+                <input class="input" type="password" placeholder="Password">
+                <span class="icon is-small is-left">
+                    <i class="fas fa-lock"></i>
+                </span>
+            </div>
+        </div>
+        <div class="field is-grouped">
+            <p class="control">
+                <button type="submit" class="button is-success">Sign in</button>
+            </p>
+            <p class="control">
+                <button type="button" class="button">Sign up</button>
+            </p>
+        </div>
+    </form>
+    <nav class="level vi-offset-top-sm">
+      <div class="level-item has-text-centered">
+        <a href="#" class="button is-text">Sign in with Google</a>
+      </div>
+    </nav>
+</div>

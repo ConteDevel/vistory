@@ -14,17 +14,24 @@
     You should have received a copy of the GNU General Public License
     along with Vistory.  If not, see <http://www.gnu.org/licenses/>.
 """
+from datetime import datetime
+
 from flask import Flask
 
 from website import settings
+from website.oauth2 import init_oauth2
+from website.routes import init_routes
 from .models import db
-from .oauth2 import config_oauth
-from .routes import bp
+
+app = Flask(__name__)
+
+
+@app.context_processor
+def inject_now():
+    return {'now': datetime.utcnow()}
 
 
 def create_app(config=None):
-    app = Flask(__name__)
-
     # load configuration
     app.config.from_object('website.settings')
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://%(USER)s:'\
@@ -37,11 +44,10 @@ def create_app(config=None):
         elif config.endswith('.py'):
             app.config.from_pyfile(config)
 
-    setup_app(app)
-    return app
+    setup_app()
 
 
-def setup_app(app):
+def setup_app():
     db.init_app(app)
-    config_oauth(app)
-    app.register_blueprint(bp, url_prefix='')
+    init_routes(app)
+    init_oauth2(app)

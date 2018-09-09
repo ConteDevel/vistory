@@ -1,7 +1,6 @@
-from website.app import create_app
+from website.app import create_app, app
 
-
-app = create_app()
+create_app()
 
 
 @app.cli.command()
