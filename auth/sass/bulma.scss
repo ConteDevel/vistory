@@ -9,6 +9,8 @@ $input-focus-border-color: $primary;
 $input-arrow: $primary;
 
 @import "../../../bulma/bulma.sass";
+// Import Extensions
+@import "../../../bulma/sass/extensions/_all.sass";
 
 .footer {
     padding: 1.5rem;
@@ -49,6 +51,11 @@ $input-arrow: $primary;
 
 .vi-fit-width {
   width: 100% !important;
+}
+
+.vi-link-clear {
+  color: black;
+  text-decoration: none;
 }
 
 .vi-logo {

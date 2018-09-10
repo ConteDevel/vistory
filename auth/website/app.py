@@ -14,21 +14,15 @@
     You should have received a copy of the GNU General Public License
     along with Vistory.  If not, see <http://www.gnu.org/licenses/>.
 """
-from datetime import datetime
-
 from flask import Flask
 
 from website import settings
 from website.oauth2 import init_oauth2
 from website.routes import init_routes
+from website.settings import RECAPTCHA_PUBLIC_KEY, RECAPTCHA_PRIVATE_KEY
 from .models import db
 
 app = Flask(__name__)
-
-
-@app.context_processor
-def inject_now():
-    return {'now': datetime.utcnow()}
 
 
 def create_app(config=None):
@@ -36,6 +30,8 @@ def create_app(config=None):
     app.config.from_object('website.settings')
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://%(USER)s:'\
         '%(PASSWORD)s@%(HOST)s:%(PORT)s/%(NAME)s' % settings.DATABASE
+    app.config['RECAPTCHA_PUBLIC_KEY'] = RECAPTCHA_PUBLIC_KEY
+    app.config['RECAPTCHA_PRIVATE_KEY'] = RECAPTCHA_PRIVATE_KEY
 
     # load app specified configuration
     if config is not None:
@@ -48,6 +44,7 @@ def create_app(config=None):
 
 
 def setup_app():
+    app.testing = True
     db.init_app(app)
     init_routes(app)
     init_oauth2(app)

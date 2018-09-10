@@ -15,15 +15,22 @@
     along with Vistory. If not, see <http://www.gnu.org/licenses/>.
 """
 import datetime
+import enum
 
 from authlib.flask.oauth2.sqla import OAuth2ClientMixin, OAuth2TokenMixin, OAuth2AuthorizationCodeMixin
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
 
 
+class Gender(enum.Enum):
+    Female = 0,
+    Male = 1
+
+
 class BaseMixin(object):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     created_at = db.Column('created_at', db.DateTime, nullable=False)
     updated_at = db.Column('updated_at', db.DateTime, nullable=False)
 
@@ -49,14 +56,20 @@ class User(db.Model, BaseMixin):
     email = db.Column(db.String(255), nullable=False)
     name = db.Column(db.String(512), nullable=False)
     birthdate = db.Column(db.Date, nullable=False)
-    avatar_url = db.Column(db.String(1024))
-    hash = db.Column(db.String(32), nullable=False)
-    salt = db.Column(db.String(32), nullable=False)
-    lock = db.Column(db.Boolean, default=False, nullable=False)
-    deleted = db.Column(db.Boolean, default=True, nullable=False)
+    avatar_url = db.Column(db.String(1024), default=None)
+    pw_hash = db.Column(db.String(128), nullable=False)
+    lock = db.Column(db.Boolean, default=True, nullable=False)
+    deleted = db.Column(db.Boolean, default=False, nullable=False)
+    gender = db.Column(db.Enum(Gender), default=None)
 
     def get_user_id(self):
         return self.id
+
+    def set_password(self, password):
+        self.pw_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.pw_hash, password)
 
 
 class Client(db.Model, OAuth2ClientMixin, BaseMixin):

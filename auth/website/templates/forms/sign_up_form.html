@@ -1,0 +1,21 @@
+{% from "helpers/_form_helper.html" import render_field %}
+<div class="box">
+    {% include 'header.html' %}
+    <form action="{{ url_for('website.routes.sign_up') }}" method="post" class="vi-offset-top-sm">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        {{ render_field(form.email) }}
+        {{ render_field(form.password) }}
+        {{ render_field(form.confirm) }}
+        <br />
+        {{ render_field(form.first_name) }}
+        {{ render_field(form.last_name) }}
+        {{ render_field(form.gender) }}
+        {{ render_field(form.birthdate) }}
+        {{ form.recaptcha }}
+        <div class="field vi-offset-top-sm">
+            <p class="control">
+                <button type="submit" class="button is-success">Sign up</button>
+            </p>
+        </div>
+    </form>
+</div>

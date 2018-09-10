@@ -18,6 +18,7 @@ from os import getenv
 
 SECRET_KEY = getenv('VIAUTH_SECRET_KEY', 'secret')
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+SERVER_NAME = '127.0.0.1:5000'
 
 DATABASE = {
     'HOST': getenv('VIAUTH_DB_HOST', 'localhost'),
@@ -26,3 +27,6 @@ DATABASE = {
     'PASSWORD': getenv('VIAUTH_DB_PASSWORD', '12345'),
     'NAME': getenv('VIAUTH_DB_NAME', 'viauth')
 }
+
+RECAPTCHA_PUBLIC_KEY = getenv('VIAUTH_RECAPTCHA_PUBLIC_KEY', '')
+RECAPTCHA_PRIVATE_KEY = getenv('VIAUTH_RECAPTCHA_PRIVATE_KEY', '')
