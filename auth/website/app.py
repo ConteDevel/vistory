@@ -20,7 +20,7 @@ from website import settings
 from website.oauth2 import init_oauth2
 from website.routes import init_routes
 from website.settings import RECAPTCHA_PUBLIC_KEY, RECAPTCHA_PRIVATE_KEY
-from .models import db
+from .models import init_db
 
 app = Flask(__name__)
 
@@ -45,6 +45,6 @@ def create_app(config=None):
 
 def setup_app():
     app.testing = True
-    db.init_app(app)
+    init_db(app)
     init_routes(app)
     init_oauth2(app)

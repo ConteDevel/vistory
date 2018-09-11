@@ -5,6 +5,8 @@
             <span class="icon is-small is-left">
                 {% if field.type == 'EmailField' %}
                 <i class="fas fa-envelope"></i>
+                {% elif field.type == 'TelField'  %}
+                <i class="fas fa-mobile"></i>
                 {% elif field.type == 'PasswordField' %}
                 <i class="fas fa-lock"></i>
                 {% elif field.type == 'DateField' %}

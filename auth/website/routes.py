@@ -58,6 +58,7 @@ def sign_up():
         if not user:
             user = form.to_user()
             db.session.add(user)
+            db.session.commit()
             return redirect(url_for('website.routes.sign_in'), status.HTTP_302_FOUND)
     return render_template('sign_up.html', form=form)
 

@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with Vistory. If not, see <http://www.gnu.org/licenses/>.
 """
-import datetime
+from datetime import datetime
 import enum
 
 from authlib.flask.oauth2.sqla import OAuth2ClientMixin, OAuth2TokenMixin, OAuth2AuthorizationCodeMixin
@@ -31,34 +31,21 @@ class Gender(enum.Enum):
 
 class BaseMixin(object):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    created_at = db.Column('created_at', db.DateTime, nullable=False)
-    updated_at = db.Column('updated_at', db.DateTime, nullable=False)
-
-    @staticmethod
-    def create_time(mapper, connection, instance):
-        now = datetime.datetime.utcnow()
-        instance.created_at = now
-        instance.updated_at = now
-
-    @staticmethod
-    def update_time(mapper, connection, instance):
-        now = datetime.datetime.utcnow()
-        instance.updated_at = now
-
-    @classmethod
-    def register(cls):
-        db.event.listen(cls, 'before_insert', cls.create_time)
-        db.event.listen(cls, 'before_update', cls.update_time)
+    created_at = db.Column('created_at', db.DateTime, default=datetime.now, nullable=False)
+    updated_at = db.Column('updated_at', db.DateTime, default=datetime.now,
+                           onupdate=datetime.now, nullable=False)
 
 
 class User(db.Model, BaseMixin):
     __tablename__ = 'users'
     email = db.Column(db.String(255), nullable=False)
-    name = db.Column(db.String(512), nullable=False)
+    phone_number = db.Column(db.String(15), nullable=False)
+    first_name = db.Column(db.String(128), nullable=False)
+    last_name = db.Column(db.String(128), nullable=False)
     birthdate = db.Column(db.Date, nullable=False)
     avatar_url = db.Column(db.String(1024), default=None)
     pw_hash = db.Column(db.String(128), nullable=False)
-    lock = db.Column(db.Boolean, default=True, nullable=False)
+    locked = db.Column(db.Boolean, default=False, nullable=False)
     deleted = db.Column(db.Boolean, default=False, nullable=False)
     gender = db.Column(db.Enum(Gender), default=None)
 
@@ -92,3 +79,10 @@ class AuthorizationCode(db.Model, OAuth2AuthorizationCodeMixin):
         db.Integer, db.ForeignKey('users.id', ondelete='CASCADE', onupdate='CASCADE')
     )
     user = db.relationship('User')
+
+
+def init_db(app):
+    with app.app_context():
+        db.init_app(app)
+        db.create_all()
+        db.session.commit()
