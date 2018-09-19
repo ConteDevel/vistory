@@ -1,10 +1,21 @@
-<nav class="level">
-  <div class="level-item has-text-centered">
-        <img class="vi-logo" src="{{ url_for('static', filename='img/ic_logo.png') }}">
+<nav class="navbar is-primary" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="#">Vistory Auth</a>
+        <div class="navbar-burger burger" data-target="mainMenu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+    <div id="mainMenu" class="navbar-menu">
+        <div class="navbar-end">
+            <div class="navbar-item has-dropdown is-hoverable">
+                <a class="navbar-link">{{ user.first_name }}</a>
+                <div class="navbar-dropdown is-boxed">
+                    <a class="navbar-item" href="{{ url_for('website.routes.sign_out') }}">Exit</a>
+                </div>
+            </div>
+        </div>
+    </div>
   </div>
 </nav>
-<h1 class="title is-0-desktop is-3-mobile has-text-centered">
-    <a href="{{ url_for('website.routes.home') }}" class="vi-link-clear">
-        <span class="has-text-primary">Vi</span>story
-    </a>
-</h1>

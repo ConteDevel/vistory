@@ -1,23 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bulma.css') }}">
-    <link href="{{ url_for('static', filename='fontawesome/css/all.css') }}" rel="stylesheet">
-    <script type="application/javascript" src="{{ url_for('static', filename='js/jquery.js') }}" defer="defer"></script>
-    <title>Vistory Auth</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-  </head>
-  <body>
-  {% include 'forms/create_client_form.html' %}
-  {% if clients %}
-      <ul>
-      {% for client in clients %}
-          <li>client.client_id | client.client_secret</li>
-      {% endfor %}
-      </ul>
-  {% else %}
-    <p>No clients</p>
-  {% endif %}
-  </body>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bulma.css') }}">
+        <link href="{{ url_for('static', filename='fontawesome/css/all.css') }}" rel="stylesheet">
+        <script type="application/javascript" src="{{ url_for('static', filename='js/jquery.js') }}" defer="defer"></script>
+        <script type="application/javascript" src="{{ url_for('static', filename='js/home.js') }}" defer="defer"></script>
+        <title>Vistory Auth</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+    <header>
+      {% include 'header.html' %}
+    </header>
+    {% include 'forms/create_client_form.html' %}
+    <br>
+    <h1 class="title">Clients</h1>
+    {% if clients %}
+        <div class="vi-table-wrapper">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>ID</th>
+                        <th>Secret key</th>
+                        <th>URI</th>
+                        <th>Redirect URI</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th>Name</th>
+                        <th>ID</th>
+                        <th>Secret key</th>
+                        <th>URI</th>
+                        <th>Redirect URI</th>
+                    </tr>
+                </tfoot>
+                <tbody>
+                    {% for client in clients %}
+                    <tr>
+                        <th>{{ client.client_name }}</th>
+                        <td>{{ client.client_id }}</td>
+                        <td>{{ client.client_secret }}</td>
+                        <td>{{ client.client_uri }}</td>
+                        <td>{{ client.redirect_uri }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="has-text-info">No clients</p>
+    {% endif %}
+    </body>
 </html>

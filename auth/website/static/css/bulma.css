@@ -9950,3 +9950,7 @@ label.panel-block:hover {
 .vi-offset-top-lg {
   margin-top: 12rem;
 }
+
+.vi-table-wrapper {
+  overflow-x: scroll;
+}

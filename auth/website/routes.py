@@ -53,7 +53,7 @@ def home():
     if user.admin:
         clients = Client.query.filter_by(user_id=user.id).all()
         form = ClientForm(request.form)
-        return render_template("home.html", clients=clients, form=form)
+        return render_template("home.html", user=user, clients=clients, form=form)
     return redirect('vistory.com')
 
 
@@ -125,7 +125,7 @@ def revoke_token():
 
 
 @bp.route('/api/me')
-@require_oauth('profile')
+@require_oauth(None)
 def api_me():
     user = current_token.user
     return jsonify(id=user.id, username=user.username)
