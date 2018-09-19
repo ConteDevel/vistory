@@ -9,14 +9,11 @@
 {% endblock %}
 {% block title %}Sign in{% endblock %}
 {% block content %}
-{% if user %}
-{% else %}
-    <div class="vi-aligner">
-        <div class="columns is-centered vi-fit-width">
-            <div class="column is-4-desktop is-half-tablet is-full-mobile">
-            {% include 'forms/sign_in_form.html' %}
-            </div>
+<div class="vi-aligner">
+    <div class="columns is-centered vi-fit-width">
+        <div class="column is-4-desktop is-half-tablet is-full-mobile">
+        {% include 'forms/sign_in_form.html' %}
         </div>
     </div>
-{% endif %}
+</div>
 {% endblock %}

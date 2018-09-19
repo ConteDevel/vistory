@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bulma.css') }}">
+    <link href="{{ url_for('static', filename='fontawesome/css/all.css') }}" rel="stylesheet">
+    <script type="application/javascript" src="{{ url_for('static', filename='js/jquery.js') }}" defer="defer"></script>
+    <title>Vistory Auth</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+  {% include 'forms/create_client_form.html' %}
+  {% if clients %}
+      <ul>
+      {% for client in clients %}
+          <li>client.client_id | client.client_secret</li>
+      {% endfor %}
+      </ul>
+  {% else %}
+    <p>No clients</p>
+  {% endif %}
+  </body>
+</html>

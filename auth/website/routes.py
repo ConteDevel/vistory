@@ -14,43 +14,87 @@
     You should have received a copy of the GNU General Public License
     along with Vistory.  If not, see <http://www.gnu.org/licenses/>.
 """
+from functools import wraps
+
 from authlib.flask.oauth2 import current_token
 from flask import request, render_template, Blueprint, session, redirect, jsonify, url_for
-from flask_api import status
-from flask_wtf import CSRFProtect
+from werkzeug.security import gen_salt
 
-from website.forms import SignUpForm
-from website.models import User, db
+from website.forms import SignUpForm, SignInForm, ClientForm
+from website.models import User, db, Client
 from website.oauth2 import server, current_user, require_oauth
 
 bp = Blueprint(__name__, 'home')
-csrf = CSRFProtect()
+
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user():
+            return redirect(url_for('website.routes.sign_in', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        user = current_user()
+        if not (user and user.admin):
+            return redirect(url_for('website.routes.sign_in', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 @bp.route('/')
+@login_required
 def home():
     user = current_user()
-    if not user:
-        return redirect(url_for('website.routes.sign_in'), status.HTTP_302_FOUND)
+    if user.admin:
+        clients = Client.query.filter_by(user_id=user.id).all()
+        form = ClientForm(request.form)
+        return render_template("home.html", clients=clients, form=form)
     return redirect('vistory.com')
 
 
-@bp.route('/signin', methods=('GET', 'POST'))
+@bp.route('/create_client', methods=['POST'])
+@admin_required
+def create_client():
+    form = ClientForm(request.form)
+    if form.validate():
+        user = current_user()
+        client = form.to_client()
+        client.user_id = user.id
+        client.client_id = gen_salt(24)
+        client.client_secret = gen_salt(48)
+        db.session.add(client)
+        db.session.commit()
+    return redirect('/')
+
+
+@bp.route('/signin', methods=['GET', 'POST'])
 def sign_in():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        user = User.query.filter_by(username=username).first()
-        if not user:
-            user = User(username=username)
-            db.session.add(user)
-            db.session.commit()
+    form = SignInForm(request.form)
+    next_url = request.args.get('next')
+    if next_url:
+        form.next.data = next_url
+    if request.method == 'POST' and form.validate():
+        email = form.email.data
+        user = User.query.filter_by(email=email).first()
+        if not (user and user.check_password(form.password.data)):
+            render_template('sign_in.html', form=form, error_msg='Invalid email or password')
         session['id'] = user.id
         return redirect('/')
-    user = current_user()
-    return render_template('sign_in.html', user=user, clients=[])
+    return render_template('sign_in.html', form=form)
 
 
-@bp.route('/signup', methods=('GET', 'POST'))
+@bp.route('/signout')
+def sign_out():
+    del session['id']
+    return redirect('/signin')
+
+
+@bp.route('/signup', methods=['GET', 'POST'])
 def sign_up():
     form = SignUpForm(request.form)
     if request.method == 'POST' and form.validate():
@@ -59,26 +103,15 @@ def sign_up():
             user = form.to_user()
             db.session.add(user)
             db.session.commit()
-            return redirect(url_for('website.routes.sign_in'), status.HTTP_302_FOUND)
+            return redirect('/signin')
     return render_template('sign_up.html', form=form)
 
 
 @bp.route("/oauth/authorize", methods=['GET', 'POST'])
+@login_required
 def authorize():
     user = current_user()
-    if request.method == 'GET':
-        grant = server.validate_consent_request(end_user=user)
-        return render_template(
-            "authorize.html",
-            grant=grant,
-            user=user
-        )
-    confirmed = request.form['confirm']
-    if confirmed:
-        # granted by resource owner
-        return server.create_authorization_response(user)
-    # denied by resource owner
-    return server.create_authorization_response(None)
+    return server.create_authorization_response(user)
 
 
 @bp.route('/oauth/token', methods=['POST'])
@@ -100,4 +133,3 @@ def api_me():
 
 def init_routes(app):
     app.register_blueprint(bp, urlprefix='')
-    csrf.init_app(app)

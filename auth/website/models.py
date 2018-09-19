@@ -48,6 +48,7 @@ class User(db.Model, BaseMixin):
     locked = db.Column(db.Boolean, default=False, nullable=False)
     deleted = db.Column(db.Boolean, default=False, nullable=False)
     gender = db.Column(db.Enum(Gender), default=None)
+    admin = db.Column(db.Boolean, default=False, nullable=False)
 
     def get_user_id(self):
         return self.id
@@ -62,6 +63,7 @@ class User(db.Model, BaseMixin):
 class Client(db.Model, OAuth2ClientMixin, BaseMixin):
     __tablename__ = 'clients'
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE', onupdate='CASCADE'))
+    trusted = db.Column(db.Boolean, default=False, nullable=False)
     user = db.relationship('User')
 
 

@@ -19,7 +19,6 @@ from flask import Flask
 from website import settings
 from website.oauth2 import init_oauth2
 from website.routes import init_routes
-from website.settings import RECAPTCHA_PUBLIC_KEY, RECAPTCHA_PRIVATE_KEY
 from .models import init_db
 
 app = Flask(__name__)
@@ -30,9 +29,8 @@ def create_app(config=None):
     app.config.from_object('website.settings')
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://%(USER)s:'\
         '%(PASSWORD)s@%(HOST)s:%(PORT)s/%(NAME)s' % settings.DATABASE
-    app.config['RECAPTCHA_PUBLIC_KEY'] = RECAPTCHA_PUBLIC_KEY
-    app.config['RECAPTCHA_PRIVATE_KEY'] = RECAPTCHA_PRIVATE_KEY
-
+    app.config['RECAPTCHA_PUBLIC_KEY'] = settings.RECAPTCHA_PUBLIC_KEY
+    app.config['RECAPTCHA_PRIVATE_KEY'] = settings.RECAPTCHA_PRIVATE_KEY
     # load app specified configuration
     if config is not None:
         if isinstance(config, dict):
