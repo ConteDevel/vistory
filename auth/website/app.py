@@ -31,6 +31,7 @@ def create_app(config=None):
         '%(PASSWORD)s@%(HOST)s:%(PORT)s/%(NAME)s' % settings.DATABASE
     app.config['RECAPTCHA_PUBLIC_KEY'] = settings.RECAPTCHA_PUBLIC_KEY
     app.config['RECAPTCHA_PRIVATE_KEY'] = settings.RECAPTCHA_PRIVATE_KEY
+    app.config['AUTHLIB_INSECURE_TRANSPORT'] = settings.AUTHLIB_INSECURE_TRANSPORT
     # load app specified configuration
     if config is not None:
         if isinstance(config, dict):

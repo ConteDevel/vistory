@@ -107,11 +107,11 @@ def sign_up():
     return render_template('sign_up.html', form=form)
 
 
-@bp.route("/oauth/authorize", methods=['GET', 'POST'])
+@bp.route("/oauth/authorize", methods=['GET'])
 @login_required
 def authorize():
     user = current_user()
-    return server.create_authorization_response(user)
+    return server.create_authorization_response(grant_user=user)
 
 
 @bp.route('/oauth/token', methods=['POST'])

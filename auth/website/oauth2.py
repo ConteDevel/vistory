@@ -62,7 +62,7 @@ def current_user():
 
 
 def query_client(client_id):
-    return Client.query.filter_by(client_id=client_id).first
+    return Client.query.filter_by(client_id=client_id).first()
 
 
 def save_token(token, request):
