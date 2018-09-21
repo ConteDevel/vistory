@@ -16,6 +16,7 @@
 """
 from datetime import datetime
 import enum
+import time
 
 from authlib.flask.oauth2.sqla import OAuth2ClientMixin, OAuth2TokenMixin, OAuth2AuthorizationCodeMixin
 from flask_sqlalchemy import SQLAlchemy
@@ -72,6 +73,10 @@ class Token(db.Model, OAuth2TokenMixin):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE', onupdate='CASCADE'))
     user = db.relationship('User')
+
+    def is_refresh_token_expired(self):
+        expires_at = self.issued_at + self.expires_in * 2
+        return expires_at < time.time()
 
 
 class AuthorizationCode(db.Model, OAuth2AuthorizationCodeMixin):

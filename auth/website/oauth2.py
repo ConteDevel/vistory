@@ -16,7 +16,8 @@
 """
 from authlib.common.security import generate_token
 from authlib.flask.oauth2 import AuthorizationServer, ResourceProtector
-from authlib.specs.rfc6749 import grants
+from authlib.flask.oauth2.sqla import create_revocation_endpoint, create_bearer_token_validator
+from authlib.specs.rfc6749 import grants, OAuth2Token
 from flask import session
 
 from website.models import Client, Token, db, User, AuthorizationCode
@@ -54,6 +55,23 @@ class AuthorizationCodeGrant(grants.AuthorizationCodeGrant):
         return User.query.get(authorization_code.user_id)
 
 
+class PasswordGrant(grants.ResourceOwnerPasswordCredentialsGrant):
+    def authenticate_user(self, email, password):
+        user = User.query.filter_by(email=email).first()
+        if user.check_password(password):
+            return user
+
+
+class RefreshTokenGrant(grants.RefreshTokenGrant):
+    def authenticate_refresh_token(self, refresh_token):
+        item = OAuth2Token.query.filter_by(refresh_token=refresh_token).first()
+        if item and not item.is_refresh_token_expired():
+            return item
+
+    def authenticate_user(self, credential):
+        return User.query.get(credential.user_id)
+
+
 def current_user():
     if 'id' in session:
         uid = session['id']
@@ -83,4 +101,14 @@ def save_token(token, request):
 def init_oauth2(app):
     server.init_app(app, query_client=query_client, save_token=save_token)
     # register it to grant endpoint
+    server.register_grant(grants.ImplicitGrant)
     server.register_grant(AuthorizationCodeGrant)
+    server.register_grant(grants.ClientCredentialsGrant)
+    server.register_grant(PasswordGrant)
+    server.register_grant(RefreshTokenGrant)
+    # support revocation
+    revocation_cls = create_revocation_endpoint(db.session, OAuth2Token)
+    server.register_endpoint(revocation_cls)
+    # protect resource
+    bearer_cls = create_bearer_token_validator(db.session, OAuth2Token)
+    require_oauth.register_token_validator(bearer_cls())

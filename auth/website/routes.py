@@ -65,6 +65,7 @@ def create_client():
         user = current_user()
         client = form.to_client()
         client.user_id = user.id
+        client.response_type = 'code'
         client.client_id = gen_salt(24)
         client.client_secret = gen_salt(48)
         db.session.add(client)
