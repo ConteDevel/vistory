@@ -1,0 +1,89 @@
+@charset "utf-8";
+
+$primary: #aa00f8;
+$footer-background-color: #EEE;
+$box-radius: 0;
+$control-radius: 0;
+$control-radius-small: 0;
+$input-focus-border-color: $primary;
+$input-arrow: $primary;
+
+@import "../../../bulma/bulma.sass";
+// Import Extensions
+@import "../../../bulma/sass/extensions/_all.sass";
+
+.footer {
+    padding: 1.5rem;
+}
+
+/*
+ * CUSTOM
+ */
+.vi-aligner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.vi-aligner-item--top {
+  align-self: flex-start;
+}
+
+.vi-aligner-item--bottom {
+  align-self: flex-end;
+}
+
+.vi-body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+.vi-color-html {
+  background-color: transparent !important;
+  background-repeat: no-repeat;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+.vi-fit-width {
+  width: 100% !important;
+}
+
+.vi-link-clear {
+  color: black;
+  text-decoration: none;
+}
+
+.vi-logo {
+  display: block;
+  max-height: 1rem;
+  width: auto;
+}
+
+.vi-main {
+  flex: 1;
+}
+
+.vi-offset-top-xs {
+  margin-top: 1rem;
+}
+
+.vi-offset-top-sm {
+  margin-top: 2rem;
+}
+
+.vi-offset-top-md {
+  margin-top: 4rem;
+}
+
+.vi-offset-top-lg {
+  margin-top: 12rem;
+}
+
+.vi-table-wrapper {
+  overflow-x: scroll;
+}

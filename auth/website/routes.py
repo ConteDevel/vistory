@@ -25,6 +25,7 @@ from website.models import User, db, Client
 from website.oauth2 import server, current_user, require_oauth
 
 bp = Blueprint(__name__, 'home')
+logger = None
 
 
 def login_required(f):
@@ -49,6 +50,7 @@ def admin_required(f):
 @bp.route('/')
 @login_required
 def home():
+    logger.debug('home')
     user = current_user()
     if user.admin:
         clients = Client.query.filter_by(user_id=user.id).all()
@@ -133,4 +135,6 @@ def api_me():
 
 
 def init_routes(app):
+    global logger
+    logger = app.logger
     app.register_blueprint(bp, urlprefix='')
