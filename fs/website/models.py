@@ -15,17 +15,35 @@
     along with Vistory. If not, see <http://www.gnu.org/licenses/>.
 """
 from datetime import datetime
+from os import path
 
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.utils import secure_filename
 
 db = SQLAlchemy()
 
 
-class BaseMixin(object):
+class File(db.Model):
+    __abstract__ = True
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    created_at = db.Column('created_at', db.DateTime, default=datetime.now, nullable=False)
-    updated_at = db.Column('updated_at', db.DateTime, default=datetime.now,
-                           onupdate=datetime.now, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
+    file = db.Column(db.LargeBinary, nullable=True)
+    extension = db.Column(db.String, nullable=False)
+    blocked = db.Column(db.Boolean, default=False, nullable=False)
+
+    def __init__(self, file):
+        _, ext = path.splitext(secure_filename(file.filename))
+        self.file = file.read()
+        self.extension = ext
+
+
+class Image(File):
+    __tablename__ = 'images'
+
+
+class Video(File):
+    __tablename__ = 'videos'
 
 
 def init_db(app):

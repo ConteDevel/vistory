@@ -45,4 +45,5 @@ SQLALCHEMY_DATABASE_URI = 'postgresql://%(USER)s:'\
 """
     FILE UPLOADING
 """
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'svg'}
+IMG_ALLOWED_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.svg'}
+VIDEO_ALLOWED_EXTENSIONS = {'.mp4'}
