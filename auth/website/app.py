@@ -15,6 +15,7 @@
     along with Vistory.  If not, see <http://www.gnu.org/licenses/>.
 """
 import logging
+from os import path
 
 from flask import Flask
 
@@ -28,7 +29,10 @@ app = Flask(__name__)
 
 def create_app(config=None):
     # load configuration
-    app.config.from_object('website.config.default')
+    if path.isfile('website/config/production.py'):
+        app.config.from_object('website.config.production')
+    else:
+        app.config.from_object('website.config.default')
     # load app specified configuration
     if config is not None:
         if isinstance(config, dict):
