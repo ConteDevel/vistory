@@ -1,7 +1,7 @@
 {% from "helpers/_form_helper.html" import render_field %}
 <div class="box">
     {% include 'mini_header.html' %}
-    <form action="{{ url_for('website.routes.sign_up') }}" method="post" class="vi-offset-top-sm">
+    <form action="{{ url_for('bp.sign_up') }}" method="post" class="vi-offset-top-sm">
         {{ render_field(form.email) }}
         {{ render_field(form.phone_number) }}
         {{ render_field(form.password) }}

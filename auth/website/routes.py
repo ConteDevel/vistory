@@ -24,7 +24,7 @@ from website.forms import SignUpForm, SignInForm, ClientForm
 from website.models import User, db, Client
 from website.oauth2 import server, current_user, require_oauth
 
-bp = Blueprint(__name__, 'home')
+bp = Blueprint('bp', __name__)
 logger = None
 
 
@@ -32,7 +32,7 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not current_user():
-            return redirect(url_for('website.routes.sign_in', next=request.url))
+            return redirect(url_for('bp.sign_in', next=request.url))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -42,7 +42,7 @@ def admin_required(f):
     def decorated_function(*args, **kwargs):
         user = current_user()
         if not (user and user.admin):
-            return redirect(url_for('website.routes.sign_in', next=request.url))
+            return redirect(url_for('bp.sign_in', next=request.url))
         return f(*args, **kwargs)
     return decorated_function
 

@@ -19,15 +19,13 @@ from os import path
 
 from flask import Flask
 
-from website.config import default
 from website.oauth2 import init_oauth2
 from website.routes import init_routes
 from .models import init_db
 
-app = Flask(__name__)
-
 
 def create_app(config=None):
+    app = Flask(__name__)
     # load configuration
     if path.isfile('website/config/production.py'):
         app.config.from_object('website.config.production')
@@ -39,14 +37,15 @@ def create_app(config=None):
             app.config.update(config)
         elif config.endswith('.py'):
             app.config.from_pyfile(config)
-    setup_app()
+    setup_app(app)
+
+    return app
 
 
-def setup_app():
+def setup_app(app):
     gunicorn_logger = logging.getLogger('gunicorn.error')
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
-    app.testing = default.TESTING
     init_db(app)
     init_routes(app)
     init_oauth2(app)

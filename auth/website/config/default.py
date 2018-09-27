@@ -17,7 +17,8 @@
 from os import getenv
 
 TESTING = getenv('VIAUTH_TESTING', False)
-SERVER_NAME = '127.0.0.1:5000'
+DEBUG = getenv('VIAUTH_DEBUG', False)
+SERVER_NAME = getenv('VIAUTH_SERVER_NAME', 'auth.vistory.local')
 SECRET_KEY = getenv('VIAUTH_SECRET_KEY', 'secret')
 """
     When AUTHLIB_INSECURE_TRANSPORT is enabled Authlib will check if the server
