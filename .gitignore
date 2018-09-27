@@ -1,10 +1,9 @@
-client/
-env/
 *__pycache__
 *.idea/
 *.sock
 log/
-*/venv
-*/fontawesome
-*/logs
-*/config/production.*
+**/venv
+**/fontawesome
+**/fontawesome/
+**/logs
+**/config/production.py
