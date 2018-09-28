@@ -30,12 +30,14 @@ class File(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
     file = db.Column(db.LargeBinary, nullable=True)
     extension = db.Column(db.String, nullable=False)
+    mime = db.Column(db.String, nullable=False)
     blocked = db.Column(db.Boolean, default=False, nullable=False)
 
     def __init__(self, file):
         _, ext = path.splitext(secure_filename(file.filename))
         self.file = file.read()
         self.extension = ext
+        self.mime = file.content_type
 
 
 class Image(File):

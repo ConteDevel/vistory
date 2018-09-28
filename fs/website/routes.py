@@ -17,13 +17,15 @@
 from os import path
 
 import werkzeug
+from flask import Blueprint, make_response
 from flask_restful import Api, Resource, reqparse
 from werkzeug.utils import secure_filename
 
 from website.jsons import ErrorJson, ImageJson, VideoJson
 from website.models import Image, db, Video
 
-api = Api(prefix='/files')
+api = Api()
+bp = Blueprint('bp', __name__)
 logger = None
 img_exts = None
 video_exts = None
@@ -43,7 +45,41 @@ def is_allowed_video(file):
     return False
 
 
+@bp.route('/images/<img_id>/file')
+def download_img(img_id):
+    image = Image.query.filter_by(id=img_id).first()
+    if image is not None:
+        response = make_response(image.file)
+        response.headers['Content-Type'] = image.mime
+        response.headers['Content-Dispostion'] = "attachment; filename={0}{1}"\
+            .format(img_id, image.extension)
+        return response
+    return ErrorJson(404, 'NOT_FOUND', 'Image not found.').to_json(), 404
+
+
 class ImageRoutes(Resource):
+
+    def get(self, img_id):
+        image = Image.query.filter_by(id=img_id).first()
+        if image is not None:
+            return ImageJson(image, '/').to_json()
+        return ErrorJson(404, 'NOT_FOUND', 'Image not found.').to_json(), 404
+
+
+class VideoRoutes(Resource):
+
+    def get(self, video_id):
+        video = Video.query.filter_by(id=video_id).first()
+        if video is not None:
+            return VideoJson(video, '/').to_json()
+        return ErrorJson(404, 'NOT_FOUND', 'Video not found.').to_json(), 404
+
+
+class ImageListRoutes(Resource):
+
+    def get(self, img_id):
+        image = Image.query.filter_by(id=img_id).first()
+        return ImageJson(image, '/').to_json()
 
     def post(self):
         parse = reqparse.RequestParser()
@@ -59,7 +95,7 @@ class ImageRoutes(Resource):
         return ErrorJson(400, 'BAD_REQUEST', 'Image format is not supported.').to_json(), 400
 
 
-class VideoRoutes(Resource):
+class VideoListRoutes(Resource):
 
     def post(self):
         parse = reqparse.RequestParser()
@@ -72,7 +108,7 @@ class VideoRoutes(Resource):
             db.session.commit()
 
             return VideoJson(video, '/').to_json(), 201
-        return ErrorJson(400, 'BAD_REQUEST', 'Video format is not supported..').to_json(), 400
+        return ErrorJson(400, 'BAD_REQUEST', 'Video format is not supported.').to_json(), 400
 
 
 def init_routes(app):
@@ -80,6 +116,11 @@ def init_routes(app):
     logger = app.logger
     img_exts = app.config['IMG_ALLOWED_EXTENSIONS']
     video_exts = app.config['VIDEO_ALLOWED_EXTENSIONS']
-    api.add_resource(ImageRoutes, '/images')
-    api.add_resource(VideoRoutes, '/videos')
+    # Initialize routing
+    app.register_blueprint(bp)
+    # Initialize RESTful API
+    api.add_resource(ImageRoutes, '/images/<img_id>')
+    api.add_resource(VideoRoutes, '/videos/<video_id>')
+    api.add_resource(ImageListRoutes, '/images')
+    api.add_resource(VideoListRoutes, '/videos')
     api.init_app(app)
