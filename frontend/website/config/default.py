@@ -16,18 +16,21 @@
 """
 from os import getenv
 
-SECRET_KEY = getenv('VIFRONTEND_SECRET_KEY', 'secret')
-AUTHLIB_INSECURE_TRANSPORT=getenv('AUTHLIB_INSECURE_TRANSPORT', '0')
-SQLALCHEMY_TRACK_MODIFICATIONS = False
-SERVER_NAME = '127.0.0.1:5000'
+TESTING = getenv('VIFRONT_TESTING', False)
+DEBUG = getenv('VIFRONT_DEBUG', False)
+SERVER_NAME = getenv('VIFRONT_SERVER_NAME', 'vistory.local')
+SECRET_KEY = getenv('VIFRONT_SECRET_KEY', 'secret')
 
-DATABASE = {
-    'HOST': getenv('VIFRONTEND_DB_HOST', 'localhost'),
-    'PORT': getenv('VIFRONTEND_DB_PORT', '5432'),
-    'USER': getenv('VIFRONTEND_DB_USER', 'postgres'),
-    'PASSWORD': getenv('VIFRONTEND_DB_PASSWORD', '12345'),
-    'NAME': getenv('VIFRONTEND_DB_NAME', 'vifrontend')
-}
+"""
+    GOOGLE RECAPTCHA SETTINGS
+"""
+RECAPTCHA_PUBLIC_KEY = getenv('VIFRONT_RECAPTCHA_PUBLIC_KEY', '')
+RECAPTCHA_PRIVATE_KEY = getenv('VIFRONT_RECAPTCHA_PRIVATE_KEY', '')
 
-RECAPTCHA_PUBLIC_KEY = getenv('VIFRONTEND_RECAPTCHA_PUBLIC_KEY', '')
-RECAPTCHA_PRIVATE_KEY = getenv('VIFRONTEND_RECAPTCHA_PRIVATE_KEY', '')
+"""
+    SERVICES
+"""
+AUTH_SERVICE = 'http://auth.vistory.local'
+FS_SERVICE = 'http://fs.vistory.local'
+POSTS_SERVICE = 'http://posts.vistory.local'
+STATS_SERVICE = 'http://statistics.vistory.local'

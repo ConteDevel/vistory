@@ -152,7 +152,7 @@ th {
 }
 
 html {
-  background-color: white;
+  background-color: #eee;
   font-size: 16px;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
@@ -9044,7 +9044,7 @@ label.panel-block:hover {
 }
 
 .footer {
-  background-color: #EEE;
+  background-color: #eee;
   padding: 3rem 1.5rem 6rem;
 }
 
@@ -9877,62 +9877,6 @@ label.panel-block:hover {
 .datepicker .calendar.is-large .calendar-event.is-danger {
   background-color: #ff3860;
   color: #fff;
-}
-
-.footer {
-  padding: 1.5rem;
-}
-
-/*
- * CUSTOM
- */
-.vi-aligner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-}
-
-.vi-aligner-item--top {
-  align-self: flex-start;
-}
-
-.vi-aligner-item--bottom {
-  align-self: flex-end;
-}
-
-.vi-body {
-  display: flex;
-  min-height: 100vh;
-  flex-direction: column;
-}
-
-.vi-color-html {
-  background-color: transparent !important;
-  background-repeat: no-repeat;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
-}
-
-.vi-fit-width {
-  width: 100% !important;
-}
-
-.vi-link-clear {
-  color: black;
-  text-decoration: none;
-}
-
-.vi-logo {
-  display: block;
-  max-height: 1rem;
-  width: auto;
-}
-
-.vi-main {
-  flex: 1;
 }
 
 .vi-offset-top-xs {

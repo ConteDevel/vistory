@@ -14,123 +14,23 @@
     You should have received a copy of the GNU General Public License
     along with Vistory.  If not, see <http://www.gnu.org/licenses/>.
 """
-from functools import wraps
+from flask import render_template, Blueprint
+from flask_restful import Api
 
-from authlib.flask.oauth2 import current_token
-from flask import request, render_template, Blueprint, session, redirect, jsonify, url_for
-from werkzeug.security import gen_salt
-
-from website.forms import SignUpForm, SignInForm, ClientForm
-from website.models import User, db, Client
-from website.oauth2 import server, current_user, require_oauth
-
-bp = Blueprint(__name__, 'home')
-
-
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not current_user():
-            return redirect(url_for('website.routes.sign_in', next=request.url))
-        return f(*args, **kwargs)
-    return decorated_function
-
-
-def admin_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        user = current_user()
-        if not (user and user.admin):
-            return redirect(url_for('website.routes.sign_in', next=request.url))
-        return f(*args, **kwargs)
-    return decorated_function
+api = Api()
+bp = Blueprint('bp', __name__)
+logger = None
 
 
 @bp.route('/')
-@login_required
 def home():
-    user = current_user()
-    if user.admin:
-        clients = Client.query.filter_by(user_id=user.id).all()
-        form = ClientForm(request.form)
-        return render_template("home.html", user=user, clients=clients, form=form)
-    return redirect('vistory.com')
-
-
-@bp.route('/create_client', methods=['POST'])
-@admin_required
-def create_client():
-    form = ClientForm(request.form)
-    if form.validate():
-        user = current_user()
-        client = form.to_client()
-        client.user_id = user.id
-        client.response_type = 'code'
-        client.client_id = gen_salt(24)
-        client.client_secret = gen_salt(48)
-        db.session.add(client)
-        db.session.commit()
-    return redirect('/')
-
-
-@bp.route('/signin', methods=['GET', 'POST'])
-def sign_in():
-    form = SignInForm(request.form)
-    next_url = request.args.get('next')
-    if next_url:
-        form.next.data = next_url
-    if request.method == 'POST' and form.validate():
-        email = form.email.data
-        user = User.query.filter_by(email=email).first()
-        if not (user and user.check_password(form.password.data)):
-            render_template('sign_in.html', form=form, error_msg='Invalid email or password')
-        session['id'] = user.id
-        return redirect('/')
-    return render_template('sign_in.html', form=form)
-
-
-@bp.route('/signout')
-def sign_out():
-    del session['id']
-    return redirect('/signin')
-
-
-@bp.route('/signup', methods=['GET', 'POST'])
-def sign_up():
-    form = SignUpForm(request.form)
-    if request.method == 'POST' and form.validate():
-        user = User.query.filter_by(email=form.email.data).first()
-        if not user:
-            user = form.to_user()
-            db.session.add(user)
-            db.session.commit()
-            return redirect('/signin')
-    return render_template('sign_up.html', form=form)
-
-
-@bp.route("/oauth/authorize", methods=['GET'])
-@login_required
-def authorize():
-    user = current_user()
-    return server.create_authorization_response(grant_user=user)
-
-
-@bp.route('/oauth/token', methods=['POST'])
-def issue_token():
-    return server.create_token_response()
-
-
-@bp.route('/oauth/revoke', methods=['POST'])
-def revoke_token():
-    return server.create_endpoint_response('revocation')
-
-
-@bp.route('/api/me')
-@require_oauth(None)
-def api_me():
-    user = current_token.user
-    return jsonify(id=user.id, username=user.username)
+    return render_template("home.html")
 
 
 def init_routes(app):
+    global logger
+    logger = app.logger
+    # Initialize routes
     app.register_blueprint(bp, urlprefix='')
+    # Add your RESTful routes below
+    api.init_app(app)

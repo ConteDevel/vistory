@@ -14,36 +14,34 @@
     You should have received a copy of the GNU General Public License
     along with Vistory.  If not, see <http://www.gnu.org/licenses/>.
 """
+import logging
+from os import path
+
 from flask import Flask
 
-from website import settings
-from website.oauth2 import init_oauth2
 from website.routes import init_routes
-from .models import init_db
-
-app = Flask(__name__)
 
 
 def create_app(config=None):
+    app = Flask(__name__)
     # load configuration
-    app.config.from_object('website.settings')
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://%(USER)s:'\
-        '%(PASSWORD)s@%(HOST)s:%(PORT)s/%(NAME)s' % settings.DATABASE
-    app.config['RECAPTCHA_PUBLIC_KEY'] = settings.RECAPTCHA_PUBLIC_KEY
-    app.config['RECAPTCHA_PRIVATE_KEY'] = settings.RECAPTCHA_PRIVATE_KEY
-    app.config['AUTHLIB_INSECURE_TRANSPORT'] = settings.AUTHLIB_INSECURE_TRANSPORT
+    if path.isfile('website/config/production.py'):
+        app.config.from_object('website.config.production')
+    else:
+        app.config.from_object('website.config.default')
     # load app specified configuration
     if config is not None:
         if isinstance(config, dict):
             app.config.update(config)
         elif config.endswith('.py'):
             app.config.from_pyfile(config)
+    setup_app(app)
 
-    setup_app()
+    return app
 
 
-def setup_app():
-    app.testing = True
-    init_db(app)
+def setup_app(app):
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
     init_routes(app)
-    init_oauth2(app)
