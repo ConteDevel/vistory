@@ -1,4 +1,53 @@
 {% extends 'base.html' %}
 {% block content %}
-    <button class="btn">
+    <div class="columns vi-offset-top-xs">
+        <div class="column is-9" style="overflow-y: auto;">
+            <h1 class="title">Recent posts</h1>
+            {% for i in range(0, 21) %}
+            <div class="tile is-ancestor">
+                <div class="tile is-parent">
+                    {% include 'post.html' %}
+                </div>
+                <div class="tile is-parent">
+                    {% include 'post.html' %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div id="rightBar" class="column is-3">
+            <div class="box">
+                <aside class="menu">
+                    <p class="menu-label">General</p>
+                    <ul class="menu-list">
+                        <li>
+                            <a>
+                                <span class="icon"><i class="fas fa-user"></i></span>
+                                Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a class="is-active">
+                                <span class="icon"><i class="fas fa-images"></i></span>
+                                Posts
+                            </a>
+                        </li>
+                        <li>
+                            <a>
+                                <span class="icon"><i class="fas fa-users"></i></span>
+                                People
+                            </a>
+                        </li>
+                        <li>
+                            <a>
+                                <span class="icon"><i class="fas fa-stream"></i></span>
+                                Channels
+                            </a>
+                        </li>
+                    </ul>
+                </aside>
+            </div>
+            <button type="button" class="button is-primary is-fullwidth">New post</button><br>
+            <button type="button" class="button is-primary is-fullwidth">New channel</button>
+        </div>
+    </div>
 {% endblock %}

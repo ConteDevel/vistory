@@ -2,16 +2,24 @@
 
 $primary: #aa00f8;
 $body-background-color: #eee;
-$footer-background-color: #eee;
 $box-radius: 0;
 $control-radius: 0;
 $control-radius-small: 0;
 $input-focus-border-color: $primary;
 $input-arrow: $primary;
+$navbar-box-shadow-size: 0 2px 0 0;
+$navbar-box-shadow-color: $primary;
+$navbar-height: 4rem;
+$menu-item-hover-color: $primary;
+$menu-item-active-background-color: $primary;
 
 @import "../../../bulma/bulma.sass";
 // Import Extensions
 @import "../../../bulma/sass/extensions/_all.sass";
+
+html, body {
+  height: 100%;
+}
 
 .vi-offset-top-xs {
   margin-top: 1rem;
