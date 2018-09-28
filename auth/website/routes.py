@@ -16,14 +16,16 @@
 """
 from functools import wraps
 
-from authlib.flask.oauth2 import current_token
-from flask import request, render_template, Blueprint, session, redirect, jsonify, url_for
+from flask import request, render_template, Blueprint, session, redirect, url_for
+from flask_restful import Resource, Api, reqparse
 from werkzeug.security import gen_salt
 
 from website.forms import SignUpForm, SignInForm, ClientForm
+from website.jsons import UserJson, ErrorJson, UsersJson
 from website.models import User, db, Client
-from website.oauth2 import server, current_user, require_oauth
+from website.oauth2 import server, current_user
 
+api = Api(prefix='/api')
 bp = Blueprint('bp', __name__)
 logger = None
 
@@ -127,14 +129,36 @@ def revoke_token():
     return server.create_endpoint_response('revocation')
 
 
-@bp.route('/api/me')
-@require_oauth(None)
-def api_me():
-    user = current_token.user
-    return jsonify(id=user.id, username=user.username)
+class UserRoutes(Resource):
+
+    def get(self, user_id):
+        user = User.query.filter_by(id=user_id).first()
+        if user:
+            return UserJson(user).to_json()
+        return ErrorJson(404, 'NOT_FOUND', 'User not found.'), 404
+
+
+class UserListRoutes(Resource):
+
+    def __init__(self):
+        self.parser = reqparse.RequestParser(bundle_errors=True)
+        self.parser.add_argument('page', type=int, required=False)
+        self.parser.add_argument('size', type=int, required=False)
+
+    def get(self):
+        args = self.parser.parse_args()
+        page = args['page'] if args['page'] else 0
+        size = args['size'] if args['size'] else 10
+        query = User.query.order_by(User.first_name, User.last_name)\
+            .paginate(page, size, error_out=False)
+        return UsersJson(query.items, page, query.pages).to_json()
 
 
 def init_routes(app):
     global logger
     logger = app.logger
+    # Initialize routes
     app.register_blueprint(bp, urlprefix='')
+    api.add_resource(UserListRoutes, '/users')
+    api.add_resource(UserRoutes, '/users/<user_id>')
+    api.init_app(app)

@@ -17,7 +17,7 @@
 from os import path
 
 import werkzeug
-from flask import Blueprint, make_response
+from flask import Blueprint, make_response, url_for
 from flask_restful import Api, Resource, reqparse
 from werkzeug.utils import secure_filename
 
@@ -57,12 +57,25 @@ def download_img(img_id):
     return ErrorJson(404, 'NOT_FOUND', 'Image not found.').to_json(), 404
 
 
+@bp.route('/videos/<video_id>/file')
+def download_video(video_id):
+    video = Video.query.filter_by(id=video_id).first()
+    if video is not None:
+        response = make_response(video.file)
+        response.headers['Content-Type'] = video.mime
+        response.headers['Content-Dispostion'] = "attachment; filename={0}{1}"\
+            .format(video_id, video.extension)
+        return response
+    return ErrorJson(404, 'NOT_FOUND', 'Video not found.').to_json(), 404
+
+
 class ImageRoutes(Resource):
 
     def get(self, img_id):
         image = Image.query.filter_by(id=img_id).first()
+        url = url_for('bp.download_img', img_id=img_id, _external=True)
         if image is not None:
-            return ImageJson(image, '/').to_json()
+            return ImageJson(image, url).to_json()
         return ErrorJson(404, 'NOT_FOUND', 'Image not found.').to_json(), 404
 
 
@@ -70,16 +83,13 @@ class VideoRoutes(Resource):
 
     def get(self, video_id):
         video = Video.query.filter_by(id=video_id).first()
+        url = url_for('bp.download_video', video_id=video_id, _external=True)
         if video is not None:
-            return VideoJson(video, '/').to_json()
+            return VideoJson(video, url).to_json()
         return ErrorJson(404, 'NOT_FOUND', 'Video not found.').to_json(), 404
 
 
 class ImageListRoutes(Resource):
-
-    def get(self, img_id):
-        image = Image.query.filter_by(id=img_id).first()
-        return ImageJson(image, '/').to_json()
 
     def post(self):
         parse = reqparse.RequestParser()
