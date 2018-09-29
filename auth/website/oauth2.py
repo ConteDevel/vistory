@@ -109,7 +109,7 @@ def save_token(token, request):
 server = AuthorizationServer(query_client=query_client, save_token=save_token)
 
 
-def init_oauth2(app):
+def init_app(app):
     server.init_app(app)
     # register it to grant endpoint
     server.register_grant(grants.ImplicitGrant)

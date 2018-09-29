@@ -19,8 +19,7 @@ from os import path
 
 from flask import Flask
 
-from website.oauth2 import init_oauth2
-from website.routes import init_routes
+from website import routes, oauth2
 from .models import init_db
 
 
@@ -47,5 +46,6 @@ def setup_app(app):
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
     init_db(app)
-    init_routes(app)
-    init_oauth2(app)
+    oauth2.init_app(app)
+    routes.init_app(app)
+
