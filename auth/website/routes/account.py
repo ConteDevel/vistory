@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with Vistory.  If not, see <http://www.gnu.org/licenses/>.
 """
-from flask import request, render_template, session, redirect, Blueprint
+from flask import request, render_template, session, redirect, Blueprint, url_for
 
 from website.forms import SignUpForm, SignInForm
 from website.models import User, db
@@ -35,14 +35,14 @@ def sign_in():
         if not (user and user.check_password(form.password.data)):
             render_template('account/sign_in.html', form=form, error_msg='Invalid email or password')
         session['id'] = user.id
-        return redirect('/')
+        return redirect(url_for('front.home'))
     return render_template('account/sign_in.html', form=form)
 
 
 @bp.route('/signout')
 def sign_out():
     del session['id']
-    return redirect('/signin')
+    return redirect(url_for('account.sign_in'))
 
 
 @bp.route('/signup', methods=['GET', 'POST'])
@@ -54,5 +54,5 @@ def sign_up():
             user = form.to_user()
             db.session.add(user)
             db.session.commit()
-            return redirect('/signin')
+            return redirect(url_for('account.signin'))
     return render_template('account/sign_up.html', form=form)

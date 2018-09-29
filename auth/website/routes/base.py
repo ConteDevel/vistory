@@ -26,7 +26,7 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not current_user():
-            return redirect(url_for('bp.sign_in', next=request.url))
+            return redirect(url_for('account.sign_in', next=request.url))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -36,6 +36,6 @@ def admin_required(f):
     def decorated_function(*args, **kwargs):
         user = current_user()
         if not (user and user.admin):
-            return redirect(url_for('bp.sign_in', next=request.url))
+            return redirect(url_for('account.sign_in', next=request.url))
         return f(*args, **kwargs)
     return decorated_function

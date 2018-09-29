@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with Vistory.  If not, see <http://www.gnu.org/licenses/>.
 """
-from flask import render_template, redirect, request, Blueprint, current_app as app
+from flask import render_template, redirect, request, Blueprint, current_app as app, url_for
 from werkzeug.security import gen_salt
 
 from website.forms import ClientForm
@@ -51,4 +51,4 @@ def create_client():
         client.client_secret = gen_salt(48)
         db.session.add(client)
         db.session.commit()
-    return redirect('/')
+    return redirect(url_for('front.home'))
