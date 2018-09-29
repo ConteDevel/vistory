@@ -23,7 +23,7 @@ from werkzeug.security import gen_salt
 from website.forms import SignUpForm, SignInForm, ClientForm
 from website.jsons import UserJson, ErrorJson, UsersJson
 from website.models import User, db, Client
-from website.oauth2 import server, current_user
+from website.oauth2 import server, current_user, GRANT_TYPES, RESPONSE_TYPES
 
 api = Api(prefix='/api')
 bp = Blueprint('bp', __name__)
@@ -69,7 +69,8 @@ def create_client():
         user = current_user()
         client = form.to_client()
         client.user_id = user.id
-        client.response_type = 'code'
+        client.grant_types = GRANT_TYPES
+        client.response_type = RESPONSE_TYPES
         client.client_id = gen_salt(24)
         client.client_secret = gen_salt(48)
         db.session.add(client)
@@ -122,6 +123,11 @@ def authorize():
 @bp.route('/oauth/token', methods=['POST'])
 def issue_token():
     return server.create_token_response()
+
+
+@bp.route('/oauth/verify', methods=['POST'])
+def verify_token():
+    pass
 
 
 @bp.route('/oauth/revoke', methods=['POST'])

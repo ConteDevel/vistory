@@ -22,7 +22,15 @@ from flask import session
 
 from website.models import Client, Token, db, User, AuthorizationCode
 
-server = AuthorizationServer()
+GRANT_TYPES = [
+    'authorization_code',
+    'refresh_token'
+]
+
+RESPONSE_TYPES = [
+    'code'
+]
+
 require_oauth = ResourceProtector()
 
 
@@ -64,7 +72,7 @@ class PasswordGrant(grants.ResourceOwnerPasswordCredentialsGrant):
 
 class RefreshTokenGrant(grants.RefreshTokenGrant):
     def authenticate_refresh_token(self, refresh_token):
-        item = OAuth2Token.query.filter_by(refresh_token=refresh_token).first()
+        item = Token.query.filter_by(refresh_token=refresh_token).first()
         if item and not item.is_refresh_token_expired():
             return item
 
@@ -98,8 +106,11 @@ def save_token(token, request):
     db.session.commit()
 
 
+server = AuthorizationServer(query_client=query_client, save_token=save_token)
+
+
 def init_oauth2(app):
-    server.init_app(app, query_client=query_client, save_token=save_token)
+    server.init_app(app)
     # register it to grant endpoint
     server.register_grant(grants.ImplicitGrant)
     server.register_grant(AuthorizationCodeGrant)

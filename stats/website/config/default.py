@@ -16,10 +16,10 @@
 """
 from os import getenv
 
-TESTING = getenv('VIFS_TESTING', False)
-DEBUG = getenv('VIFS_DEBUG', False)
-SERVER_NAME = getenv('VIFS_SERVER_NAME', 'fs.vistory.local')
-SECRET_KEY = getenv('VIFS_SECRET_KEY', 'secret')
+TESTING = getenv('VISTATS_TESTING', False)
+DEBUG = getenv('VISTATS_DEBUG', False)
+SERVER_NAME = getenv('VISTATS_SERVER_NAME', 'statistics.vistory.local')
+SECRET_KEY = getenv('VISTATS_SECRET_KEY', 'secret')
 
 """
     DATABASE SETTINGS
@@ -34,15 +34,11 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
     PostgreSQL connection settings
 """
 DATABASE = {
-    'HOST': getenv('VIFS_DB_HOST', 'localhost'),
-    'PORT': getenv('VIFS_DB_PORT', '5432'),
-    'USER': getenv('VIFS_DB_USER', 'postgres'),
-    'PASSWORD': getenv('VIFS_DB_PASSWORD', '12345'),
-    'NAME': getenv('VIFS_DB_NAME', 'vifs')
+    'HOST': getenv('VISTATS_DB_HOST', 'localhost'),
+    'PORT': getenv('VISTATS_DB_PORT', '5432'),
+    'USER': getenv('VISTATS_DB_USER', 'postgres'),
+    'PASSWORD': getenv('VISTATS_DB_PASSWORD', '12345'),
+    'NAME': getenv('VISTATS_DB_NAME', 'vistatistics')
 }
 SQLALCHEMY_DATABASE_URI = 'postgresql://%(USER)s:'\
         '%(PASSWORD)s@%(HOST)s:%(PORT)s/%(NAME)s' % DATABASE
-"""
-    FILE UPLOADING
-"""
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'svg'}

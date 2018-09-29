@@ -1,4 +1,4 @@
-from vifs import app
+from vistats import app
 
 if __name__ == "__main__":
     app.run()

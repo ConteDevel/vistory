@@ -24,8 +24,21 @@ db = SQLAlchemy()
 class BaseMixin(object):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     created_at = db.Column('created_at', db.DateTime, default=datetime.now, nullable=False)
-    updated_at = db.Column('updated_at', db.DateTime, default=datetime.now,
-                           onupdate=datetime.now, nullable=False)
+
+
+class Client(db.Model, BaseMixin):
+    __tablename__ = 'clients'
+    user_id = db.Column(db.Integer, nullable=False)
+    name = db.Column(db.String, nullable=False)
+    location = db.Column(db.String, nullable=True)
+
+
+class Metric(db.Model, BaseMixin):
+    __tablename__ = 'metrics'
+    user_id = db.Column(db.Integer, nullable=False)
+    action = db.Column(db.String, nullable=False)
+    duration = db.Column(db.BigInteger, nullable=False, default=0)
+    result = db.Column(db.String, nullable=False)
 
 
 def init_db(app):
