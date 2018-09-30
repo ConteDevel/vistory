@@ -19,7 +19,7 @@ from os import path
 
 from flask import Flask
 
-from website.routes import init_routes
+from website import routes
 
 
 def create_app(config=None):
@@ -44,4 +44,4 @@ def setup_app(app):
     gunicorn_logger = logging.getLogger('gunicorn.error')
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
-    init_routes(app)
+    routes.init_app(app)

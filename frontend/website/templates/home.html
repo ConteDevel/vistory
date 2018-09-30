@@ -1,53 +1,62 @@
-{% extends 'base.html' %}
-{% block content %}
-    <div class="columns vi-offset-top-xs">
-        <div class="column is-9" style="overflow-y: auto;">
-            <h1 class="title">Recent posts</h1>
-            {% for i in range(0, 21) %}
-            <div class="tile is-ancestor">
-                <div class="tile is-parent">
-                    {% include 'post.html' %}
+<!DOCTYPE html>
+<html lang="en" class="has-navbar-fixed-top">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bulma.css') }}">
+        <link href="{{ url_for('static', filename='fontawesome/css/all.css') }}" rel="stylesheet">
+        <script type="application/javascript" src="{{ url_for('static', filename='js/vue.js') }}" defer></script>
+        <script type="application/javascript" src="{{ url_for('static', filename='js/oauth2.js') }}" defer></script>
+        <script type="application/javascript" src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+        <title>Vistory</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <div id="app">
+            <header>
+              {% include 'header.html' %}
+            </header>
+            <section class="container">
+                <div class="columns vi-offset-top-xs">
+                    <div class="column is-9" style="overflow-y: auto;">
+                        {{ '{{ message }}' }}
+                    </div>
+                    <div id="rightBar" class="column is-3">
+                        <div class="box">
+                            <aside class="menu">
+                                <p class="menu-label">General</p>
+                                <ul class="menu-list">
+                                    <li>
+                                        <a>
+                                            <span class="icon"><i class="fas fa-user"></i></span>
+                                            Profile
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="is-active">
+                                            <span class="icon"><i class="fas fa-images"></i></span>
+                                            Posts
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a>
+                                            <span class="icon"><i class="fas fa-users"></i></span>
+                                            People
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a>
+                                            <span class="icon"><i class="fas fa-stream"></i></span>
+                                            Channels
+                                        </a>
+                                    </li>
+                                </ul>
+                            </aside>
+                        </div>
+                        <button type="button" class="button is-primary is-fullwidth">New post</button><br>
+                        <button type="button" class="button is-primary is-fullwidth">New channel</button>
+                    </div>
                 </div>
-                <div class="tile is-parent">
-                    {% include 'post.html' %}
-                </div>
-            </div>
-            {% endfor %}
+            </section>
         </div>
-        <div id="rightBar" class="column is-3">
-            <div class="box">
-                <aside class="menu">
-                    <p class="menu-label">General</p>
-                    <ul class="menu-list">
-                        <li>
-                            <a>
-                                <span class="icon"><i class="fas fa-user"></i></span>
-                                Profile
-                            </a>
-                        </li>
-                        <li>
-                            <a class="is-active">
-                                <span class="icon"><i class="fas fa-images"></i></span>
-                                Posts
-                            </a>
-                        </li>
-                        <li>
-                            <a>
-                                <span class="icon"><i class="fas fa-users"></i></span>
-                                People
-                            </a>
-                        </li>
-                        <li>
-                            <a>
-                                <span class="icon"><i class="fas fa-stream"></i></span>
-                                Channels
-                            </a>
-                        </li>
-                    </ul>
-                </aside>
-            </div>
-            <button type="button" class="button is-primary is-fullwidth">New post</button><br>
-            <button type="button" class="button is-primary is-fullwidth">New channel</button>
-        </div>
-    </div>
-{% endblock %}
+    </body>
+</html>

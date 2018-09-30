@@ -10,15 +10,22 @@
         </div>
     </div>
     <div id="mainMenu" class="navbar-menu">
-        <div class="navbar-end">
-            <div class="navbar-item">{% include 'forms/search_form.html' %}</div>
-            <div class="navbar-item has-dropdown is-hoverable">
-                <a class="navbar-link">Denis Sologub</a>
-                <div class="navbar-dropdown is-boxed">
-                    <a class="navbar-item" href="#">Exit</a>
+        <main-menu inline-template>
+            <div class="navbar-end">
+                <div class="navbar-item">{% include 'forms/search_form.html' %}</div>
+                <div v-if="signed" class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">Denis Sologub</a>
+                    <div class="navbar-dropdown is-boxed">
+                        <a class="navbar-item" href="#">Exit</a>
+                    </div>
                 </div>
+                <template v-else>
+                    <div class="navbar-item">
+                        <a class="navbar-item button is-primary" href="{{ sign_in_url }}">Sign in</a>
+                    </div>
+                </template>
             </div>
-        </div>
+        </main-menu>
     </div>
   </div>
 </nav>

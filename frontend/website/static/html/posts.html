@@ -1,0 +1,11 @@
+<h1 class="title">Recent posts</h1>
+{% for i in range(0, 21) %}
+<div class="tile is-ancestor">
+    <div class="tile is-parent">
+        {% include 'post.html' %}
+    </div>
+    <div class="tile is-parent">
+        {% include 'post.html' %}
+    </div>
+</div>
+{% endfor %}
