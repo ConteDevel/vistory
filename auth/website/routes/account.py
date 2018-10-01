@@ -33,9 +33,13 @@ def sign_in():
         email = form.email.data
         user = User.query.filter_by(email=email).first()
         if not (user and user.check_password(form.password.data)):
-            render_template('account/sign_in.html', form=form, error_msg='Invalid email or password')
+            render_template('account/sign_in.html', form=form,
+                            error_msg='Invalid email or password')
         session['id'] = user.id
-        return redirect(url_for('front.home'))
+        next_url = form.next.data
+        if next_url:
+            return redirect(next_url)
+        return url_for('front.home')
     return render_template('account/sign_in.html', form=form)
 
 
@@ -48,11 +52,17 @@ def sign_out():
 @bp.route('/signup', methods=['GET', 'POST'])
 def sign_up():
     form = SignUpForm(request.form)
+    next_url = request.args.get('next')
+    if next_url:
+        form.next.data = next_url
     if request.method == 'POST' and form.validate():
         user = User.query.filter_by(email=form.email.data).first()
         if not user:
             user = form.to_user()
             db.session.add(user)
             db.session.commit()
-            return redirect(url_for('account.signin'))
+            next_url = form.next.data
+            sign_in_url = url_for('account.sign_in', next=next_url) if next_url \
+                else url_for('account.sign_in')
+            return redirect(sign_in_url)
     return render_template('account/sign_up.html', form=form)

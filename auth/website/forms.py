@@ -35,6 +35,7 @@ class SignUpForm(Form):
     ])
     confirm = PasswordField('Repeat password', [validators.DataRequired()])
     recaptcha = RecaptchaField()
+    next = HiddenField('Next URL')
 
     def to_user(self):
         user = User()
