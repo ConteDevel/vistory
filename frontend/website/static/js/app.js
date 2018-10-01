@@ -1,3 +1,12 @@
+document.addEventListener('DOMContentLoaded', function() {
+    var burger = document.querySelector(".navbar-burger");
+    burger.addEventListener('click', function() {
+        burger.classList.toggle("is-active");
+        var menu = document.querySelector(".navbar-menu");
+        menu.classList.toggle("is-active");
+    });
+});
+
 let rightMenuItem = {
     delimiters: ['{(', ')}'],
     template: '#right-menu-item',
@@ -30,15 +39,36 @@ let app = new Vue({
             {id: 'channels', title: 'Channels', icon: 'fa-stream'}
         ],
         selectedIndex: 1,
-        mainTitle: null
+        mainTitle: null,
+        searchRequest: null,
+        content: ''
     },
     methods: {
+        loadPage: function(title, url) {
+            this.mainTitle = title;
+            axios.get(url)
+                .then(response => (this.content = response.data));
+        },
         /**
         * On right menu item selected listener
         */
-        onItemSelected(index) {
+        onItemSelected: function(index) {
             this.selectedIndex = index;
-            this.mainTitle = this.sections[index].title
+            let title = this.sections[index].title;
+            let id = this.sections[index].id;
+            this.loadPage(title, '/pages/' + id);
+        },
+        onSearch: function() {
+            if (this.searchRequest) {
+                let title = 'Search results for \"' + this.searchRequest + '\"...';
+                this.loadPage(title, '/pages/search_results');
+            }
+        },
+        onNewPost: function() {
+            this.loadPage('New post', '/pages/new_post');
+        },
+        onNewChannel: function() {
+            this.loadPage('New channel', '/pages/new_channel');
         }
     }
 });

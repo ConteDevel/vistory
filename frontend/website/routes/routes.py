@@ -16,7 +16,18 @@
 """
 from flask import render_template, Blueprint, current_app as cur_app
 
+from website.jsons import ErrorJson
+
 bp = Blueprint('bp', __name__)
+PAGES = [
+    'new_post',
+    'new_channel',
+    'search_results',
+    'profile',
+    'posts',
+    'people',
+    'channels'
+]
 
 
 @bp.route('/')
@@ -24,3 +35,10 @@ def home():
     sign_in_url = '{0}/oauth/authorize?client_id={1}&response_type=code&state={2}'\
         .format(cur_app.config['AUTH_SERVICE'], cur_app.config['CLIENT_ID'], cur_app.config['SECRET_KEY'])
     return render_template("home.html", sign_in_url=sign_in_url)
+
+
+@bp.route('/pages/<page_name>')
+def get_page(page_name):
+    if page_name not in PAGES:
+        return ErrorJson(404, 'NOT_FOUND', 'Requested page not found.').to_json(), 404
+    return render_template('pages/%s.html' % page_name)
