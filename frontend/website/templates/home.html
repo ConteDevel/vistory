@@ -1,4 +1,16 @@
 <!DOCTYPE html>
+<script type="text/x-template" id="right-menu-item">
+    <li
+            @click.stop="toggleRowActive"
+            :key="index">
+        <a v-bind:class="{'is-active': active}">
+            <span class="icon">
+                <i class="fas" v-bind:class="icon"></i>
+            </span>
+            {( title )}
+        </a>
+    </li>
+</script>
 <html lang="en" class="has-navbar-fixed-top">
     <head>
         <meta charset="UTF-8">
@@ -11,52 +23,40 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>
-        <div id="app">
-            <header>
-              {% include 'header.html' %}
-            </header>
-            <section class="container">
-                <div class="columns vi-offset-top-xs">
-                    <div class="column is-9" style="overflow-y: auto;">
-                        {{ '{{ message }}' }}
-                    </div>
-                    <div id="rightBar" class="column is-3">
-                        <div class="box">
-                            <aside class="menu">
-                                <p class="menu-label">General</p>
-                                <ul class="menu-list">
-                                    <li>
-                                        <a>
-                                            <span class="icon"><i class="fas fa-user"></i></span>
-                                            Profile
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="is-active">
-                                            <span class="icon"><i class="fas fa-images"></i></span>
-                                            Posts
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a>
-                                            <span class="icon"><i class="fas fa-users"></i></span>
-                                            People
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a>
-                                            <span class="icon"><i class="fas fa-stream"></i></span>
-                                            Channels
-                                        </a>
-                                    </li>
-                                </ul>
-                            </aside>
+        <div id="page">
+            <template>
+                <header>
+                    {% include 'header.html' %}
+                </header>
+                <section class="container">
+                    <div class="columns vi-offset-top-xs">
+                        <div class="column" style="overflow-y: auto;">
+                            <h1 class="title">{( mainTitle )}</h1>
                         </div>
-                        <button type="button" class="button is-primary is-fullwidth">New post</button><br>
-                        <button type="button" class="button is-primary is-fullwidth">New channel</button>
+                        <div id="rightBar" class="column is-3" v-if="signed">
+                            <div class="box">
+                                <aside class="menu">
+                                    <p class="menu-label">General</p>
+                                    <ul class="menu-list">
+                                        <right-menu-item
+                                                :title="section.title"
+                                                :icon="section.icon"
+                                                v-for="(section, index) in sections"
+                                                :active="index === selectedIndex"
+                                                :index="index"
+                                                :key="section.id"
+                                                :listener="onItemSelected"
+                                                @newactive="selectedIndex = $event">
+                                        </right-menu-item>
+                                    </ul>
+                                </aside>
+                            </div>
+                            <button type="button" class="button is-primary is-fullwidth">New post</button><br>
+                            <button type="button" class="button is-primary is-fullwidth">New channel</button>
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            </template>
         </div>
     </body>
 </html>
