@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" class="has-navbar-fixed-top">
+    <head>
+        <meta charset="UTF-8">
+        <script type="application/javascript" src="{{ url_for('static', filename='js/oauth2.js') }}"></script>
+        <title>Vistory</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <script type="application/javascript">
+            document.addEventListener('DOMContentLoaded', function() {
+                const tokenResponse = {{ token|tojson }};
+                let token = JSON.parse(tokenResponse);
+                if (token.hasOwnProperty('access_token')) {
+                    localStorage.setItem('access_token', token['access_token']);
+                }
+                if (token.hasOwnProperty('refresh_token')) {
+                    localStorage.setItem('refresh_token', token['refresh_token']);
+                }
+                window.location.href = '{{ url_for('bp.home') }}';
+            });
+        </script>
+    </body>
+</html>

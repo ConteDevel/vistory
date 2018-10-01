@@ -10,5 +10,6 @@ function refreshToken() {
 
 function initOAuth2() {
     let accessToken = localStorage.getItem('access_token');
+    console.log('access_token = ' + accessToken);
     return accessToken !== null || refreshToken();
 }

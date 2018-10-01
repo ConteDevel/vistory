@@ -16,14 +16,26 @@
 """
 import ssl
 import urllib.request
+from base64 import b64encode
 from urllib import parse
 
-from flask import Blueprint, current_app as app, request, redirect, url_for
+from flask import Blueprint, current_app as app, request, redirect, url_for, render_template
 
 bp = Blueprint('oauth2', __name__)
+
 ctx = ssl.create_default_context()
 ctx.check_hostname = False
 ctx.verify_mode = ssl.CERT_NONE
+
+
+def send_post(url, data):
+    client_id_secret = app.config['CLIENT_ID'] + ":" + app.config['CLIENT_SECRET']
+    auth = b64encode(bytes(client_id_secret, 'ascii')).decode('ascii')
+    headers = {'Authorization': 'Basic ' + auth}
+    req = urllib.request.Request(url, data, headers, unverifiable=True)
+    response = urllib.request.urlopen(req, context=ctx)
+    json = response.read().decode('utf-8')
+    return json
 
 
 @bp.route('/callback')
@@ -40,6 +52,5 @@ def callback():
         'code': code,
         'state': state
     }).encode()
-    auth = (app.config['CLIENT_ID'], app.config['CLIENT_SECRET'])
-    r = urllib.request.urlopen(url, data, auth=auth, context=ctx)
-    return print(r.read())
+    token = send_post(url, data)
+    return render_template("callback.html", token=token)
