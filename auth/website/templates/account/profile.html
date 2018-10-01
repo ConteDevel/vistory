@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+    <div class="columns is-centered vi-offset-top-xs">
+        <div class="column is-half-desktop">
+            <div class="box">
+                <h1 class="title">Profile</h1>
+                {% include 'forms/profile_form.html' %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -6,7 +6,7 @@ from wtforms.widgets.html5 import DateInput
 from website.models import User, Gender, Client
 
 
-class SignUpForm(Form):
+class ProfileForm(Form):
     first_name = StringField('First name', [
         validators.DataRequired(),
         validators.Length(min=3, max=64)
@@ -14,10 +14,6 @@ class SignUpForm(Form):
     last_name = StringField('Last name', [
         validators.DataRequired(),
         validators.Length(min=3, max=64)
-    ])
-    email = EmailField('Email', [
-        validators.DataRequired(),
-        validators.Length(min=6, max=255)
     ])
     phone_number = TelField('Phone number', [
         validators.DataRequired(),
@@ -28,24 +24,22 @@ class SignUpForm(Form):
         ('1', Gender.Male.name),
         ('0', Gender.Female.name)
     ])
-    password = PasswordField('Password', [
-        validators.DataRequired(),
-        validators.Length(min=8, max=50),
-        validators.EqualTo('confirm', message='Passwords must match')
-    ])
-    confirm = PasswordField('Repeat password', [validators.DataRequired()])
-    recaptcha = RecaptchaField()
-    next = HiddenField('Next URL')
 
-    def to_user(self):
-        user = User()
-        user.email = self.email.data,
+    def set(self, user):
+        self.first_name.data = user.first_name
+        self.last_name.data = user.last_name
+        self.phone_number.data = user.phone_number
+        self.birthdate.data = user.birthdate
+        self.gender.data = '1' if user.gender == Gender.Male else '0'
+
+    def to_user(self, user=None):
+        if not user:
+            user = User()
         user.first_name = self.first_name.data
         user.last_name = self.last_name.data
         user.phone_number = self.phone_number.data
         user.birthdate = self.birthdate.data
-        user.gender = Gender.Male if self.gender.data == '0' else Gender.Female
-        user.set_password(password=self.password.data)
+        user.gender = Gender.Male if self.gender.data == '1' else Gender.Female
         return user
 
 
@@ -60,6 +54,16 @@ class SignInForm(Form):
     ])
     recaptcha = RecaptchaField()
     next = HiddenField('Next URL')
+
+
+class SignUpForm(ProfileForm, SignInForm):
+    confirm = PasswordField('Repeat password', [validators.DataRequired()])
+
+    def to_user(self):
+        user = ProfileForm.to_user(self)
+        user.email = self.email.data
+        user.set_password(password=self.password.data)
+        return user
 
 
 class ClientForm(Form):

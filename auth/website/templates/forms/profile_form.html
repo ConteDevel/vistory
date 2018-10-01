@@ -1,0 +1,13 @@
+{% from "helpers/_form_helper.html" import render_field %}
+<form action="{{ url_for('account.profile') }}" method="post" class="vi-offset-top-sm">
+    {{ render_field(form.first_name) }}
+    {{ render_field(form.last_name) }}
+    {{ render_field(form.phone_number) }}
+    {{ render_field(form.gender) }}
+    {{ render_field(form.birthdate) }}
+    <div class="field vi-offset-top-sm">
+        <p class="control">
+            <button type="submit" class="button is-success">Save changes</button>
+        </p>
+    </div>
+</form>
