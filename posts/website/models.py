@@ -23,8 +23,16 @@ db = SQLAlchemy()
 
 
 class FileType(enum.Enum):
-    Image = 'image',
-    Video = 'video'
+    Image = 0,
+    Video = 1
+
+    @staticmethod
+    def from_value(value):
+        if value == 'image':
+            return FileType.Image
+        if value == 'video':
+            return FileType.Video
+        raise ValueError('Post type can not be "%s".' % value)
 
 
 class BaseMixin(object):
@@ -39,26 +47,21 @@ class Post(db.Model, BaseMixin):
     user_id = db.Column(db.Integer, nullable=False)
     channel_id = db.Column(db.Integer, nullable=True)
     blocked = db.Column(db.Boolean, nullable=False, default=False)
-
-
-class File(db.Model, BaseMixin):
-    __tablename__ = 'files'
-    post_id = db.Column(
-        db.Integer,
-        db.ForeignKey('posts.id', ondelete='CASCADE', onupdate='CASCADE'),
-        nullable=False
-    )
+    attachment_id = db.Column(db.Integer, nullable=False)
     type = db.Column(db.Enum(FileType), nullable=False)
-    blocked = db.Column(db.Boolean, nullable=False, default=False)
+
+    def parse(self, json_data):
+        self.description = json_data.get('description', None)
+        self.user_id = json_data['user_id']
+        self.channel_id = json_data.get('channel_id', None)
+        self.attachment_id = json_data['attachment_id']
+        self.type = FileType.from_value(json_data['type'])
 
 
-class LikeMixin(object):
+class PostLike(db.Model, BaseMixin):
+    __tablename__ = 'likes'
     user_id = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
-
-
-class PostLike(db.Model, LikeMixin):
-    __tablename__ = 'post_likes'
     post_id = db.Column(
         db.Integer,
         db.ForeignKey('posts.id', ondelete='CASCADE', onupdate='CASCADE'),
@@ -66,16 +69,7 @@ class PostLike(db.Model, LikeMixin):
     )
 
 
-class FileLike(db.Model, LikeMixin):
-    __tablename__ = 'file_likes'
-    file_id = db.Column(
-        db.Integer,
-        db.ForeignKey('files.id', ondelete='CASCADE', onupdate='CASCADE'),
-        nullable=False
-    )
-
-
-def init_db(app):
+def init_app(app):
     with app.app_context():
         db.init_app(app)
         db.create_all()

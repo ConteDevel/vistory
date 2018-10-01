@@ -14,19 +14,38 @@
     You should have received a copy of the GNU General Public License
     along with Vistory.  If not, see <http://www.gnu.org/licenses/>.
 """
+from flask import request
 from flask_restful import Api, Resource
 
-api = Api(prefix='/files')
+from website.jsons import PostJson, ChannelPostJson
+from website.models import Post, db
+
+api = Api(prefix='/api/posts')
 logger = None
 
 
-class ImageRoutes(Resource):
+class PostRoutes(Resource):
+    def get(self, post_id):
+        post = Post.query.filter_by(id=post_id).first()
+        return ChannelPostJson(post).to_json()
+
+
+class PostListRoutes(Resource):
+    def post(self):
+        json_data = request.get_json(force=True)
+        post = Post()
+        post.parse(json_data)
+        db.session.add(post)
+        db.session.commit()
+        return PostJson(post).to_json()
+
     def get(self):
-        return {'hello': 'world'}
+        pass
 
 
-def init_routes(app):
+def init_app(app):
     global logger
     logger = app.logger
-    api.add_resource(ImageRoutes, '/')
+    api.add_resource(PostRoutes, '/<post_id>')
+    api.add_resource(PostListRoutes, '/')
     api.init_app(app)

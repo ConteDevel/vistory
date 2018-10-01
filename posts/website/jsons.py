@@ -31,24 +31,34 @@ class ErrorJson(BaseJson):
         self.description = description
 
 
-class FileJsonMixin:
+class BadRequestJson(ErrorJson):
 
-    def __init__(self, file, url):
-        self.id = file.id
-        self.created_at = file.created_at
-        self.updated_at = file.updated_at
-        self.url = url
+    def __init__(self, description):
+        ErrorJson.__init__(self, 400, 'BAD_REQUEST', description)
 
 
-class ImageJson(BaseJson, FileJsonMixin):
+class NotFoundJson(ErrorJson):
 
-    def __init__(self, image, url):
-        BaseJson.__init__(self, 'image')
-        FileJsonMixin.__init__(self, image, url)
+    def __init__(self, description):
+        ErrorJson.__init__(self, 404, 'NOT_FOUND', description)
 
 
-class VideoJson(BaseJson, FileJsonMixin):
+class PostJson(BaseJson):
 
-    def __init__(self, image, url):
-        BaseJson.__init__(self, 'video')
-        FileJsonMixin.__init__(self, image, url)
+    def __init__(self, post):
+        BaseJson.__init__(self, 'post')
+        self.id = post.id
+        self.created_at = post.created_at
+        self.updated_at = post.updated_at
+        self.description = post.description
+        self.type = post.type.name.lower()
+        self.attachment_id = post.attachment_id
+        self.user_id = post.user_id
+        self.blocked = post.blocked
+
+
+class ChannelPostJson(PostJson):
+
+    def __init__(self, post):
+        PostJson.__init__(self, post)
+        self.channel_id = post.channel_id
