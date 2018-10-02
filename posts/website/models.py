@@ -18,6 +18,7 @@ import enum
 from datetime import datetime
 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.ext.hybrid import hybrid_property
 
 db = SQLAlchemy()
 
@@ -50,6 +51,12 @@ class Post(db.Model, BaseMixin):
     attachment_id = db.Column(db.Integer, nullable=False)
     type = db.Column(db.Enum(FileType), nullable=False)
 
+    likes = db.relationship("Like")
+
+    @hybrid_property
+    def num_likes(self):
+        return len(self.likes)
+
     def parse(self, json_data):
         self.description = json_data.get('description', None)
         self.user_id = json_data['user_id']
@@ -58,15 +65,20 @@ class Post(db.Model, BaseMixin):
         self.type = FileType.from_value(json_data['type'])
 
 
-class PostLike(db.Model, BaseMixin):
+class Like(db.Model):
     __tablename__ = 'likes'
-    user_id = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, nullable=False, primary_key=True)
     created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
     post_id = db.Column(
         db.Integer,
         db.ForeignKey('posts.id', ondelete='CASCADE', onupdate='CASCADE'),
-        nullable=False
+        nullable=False,
+        primary_key=True
     )
+
+    def __init__(self, post_id, user_id):
+        self.post_id = post_id
+        self.user_id = user_id
 
 
 def init_app(app):

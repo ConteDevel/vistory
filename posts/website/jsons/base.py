@@ -35,6 +35,7 @@ class PostJson(BaseJson):
         self.user_id = post.user_id
         self.blocked = post.blocked
         self.channel_id = post.channel_id
+        self.likes = post.num_likes
 
 
 class PageJson(BaseJson):
@@ -55,3 +56,12 @@ class PostPageJson(PageJson):
         for post in posts:
             post_json = PostJson(post)
             self.items.append(post_json)
+
+
+class LikeJson(BaseJson):
+
+    def __init__(self, like):
+        BaseJson.__init__(self, 'like')
+        self.user_id = like.user_id
+        self.post_id = like.post_id
+        self.created_at = like.created_at

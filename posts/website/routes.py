@@ -19,8 +19,8 @@ from flask_restful import Api, Resource
 from marshmallow import fields
 from webargs.flaskparser import use_args
 
-from website.jsons.base import PostJson, PostPageJson
-from website.models import Post, db
+from website.jsons.base import PostJson, PostPageJson, LikeJson
+from website.models import Post, db, Like
 
 api = Api(prefix='/api/posts')
 
@@ -40,6 +40,10 @@ get_posts_args = {
     'user_id': fields.Int(missing=None, required=False),
     'page': fields.Int(missing=1, required=False),
     'size': fields.Int(missing=10, required=False)
+}
+
+like_args = {
+    'user_id': fields.Int(required=True)
 }
 
 
@@ -89,7 +93,30 @@ class PostListRoutes(Resource):
         return PostPageJson(query.items, page, query.pages).to_json()
 
 
+class LikeRoutes(Resource):
+
+    @use_args(like_args, locations=['json'])
+    def post(self, args, post_id):
+        like = Like(post_id, args['user_id'])
+        db.session.add(like)
+        db.session.commit()
+        return LikeJson(like).to_json(), status.HTTP_201_CREATED
+
+    @use_args(like_args, locations=['json'])
+    def delete(self, args, post_id):
+        like = Like.query.filter_by(post_id=post_id, user_id=args['user_id']).first()
+        db.session.delete(like)
+        db.session.commit()
+        return '', status.HTTP_204_NO_CONTENT
+
+    @use_args(like_args)
+    def get(self, args, post_id):
+        like = Like.query.filter_by(post_id=post_id, user_id=args['user_id']).first()
+        return LikeJson(like).to_json()
+
+
 def init_app(app):
+    api.add_resource(LikeRoutes, '/<int:post_id>/likes/')
     api.add_resource(PostRoutes, '/<int:post_id>')
     api.add_resource(PostListRoutes, '/')
     api.init_app(app)

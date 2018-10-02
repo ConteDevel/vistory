@@ -26,3 +26,9 @@ class UnprocessableEntityJson(ErrorJson):
 
     def __init__(self, messages):
         ErrorJson.__init__(self, 422, 'UNPROCESSABLE_ENTITY', messages)
+
+
+class InternalServerErrorJson(ErrorJson):
+
+    def __init__(self, messages):
+        ErrorJson.__init__(self, 500, 'INTERNAL_SERVER_ERROR', messages)
