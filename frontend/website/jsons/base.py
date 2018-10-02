@@ -25,12 +25,3 @@ class BaseJson:
     def to_json(self):
         return json.dumps(self.__dict__, default=serialize)
 
-
-class ErrorJson(BaseJson):
-
-    def __init__(self, code, error, description):
-        BaseJson.__init__(self, 'error')
-        self.code = code
-        self.error = error
-        self.description = description
-

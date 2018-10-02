@@ -16,7 +16,7 @@
 """
 from flask import render_template, Blueprint, current_app as cur_app
 
-from website.jsons import ErrorJson
+from website.jsons.errors import ErrorJson
 
 bp = Blueprint('bp', __name__)
 PAGES = [

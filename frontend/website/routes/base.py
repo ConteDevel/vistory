@@ -4,7 +4,7 @@ from functools import wraps
 from flask import url_for, request, redirect, current_app as app
 
 
-def login_required(f):
+def oauth2_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'Authorization' not in request.headers:

@@ -23,17 +23,20 @@ from flask import Blueprint, current_app as app, request, redirect, url_for, ren
 
 bp = Blueprint('oauth2', __name__)
 
-ctx = ssl.create_default_context()
-ctx.check_hostname = False
-ctx.verify_mode = ssl.CERT_NONE
+# Create a SSL context to accept not-trusted certificates
+untrusted_ssl_ctx = ssl.create_default_context()
+untrusted_ssl_ctx.check_hostname = False
+untrusted_ssl_ctx.verify_mode = ssl.CERT_NONE
 
 
 def send_post(url, data):
+    # Create a header for the basic authorization
     client_id_secret = app.config['CLIENT_ID'] + ":" + app.config['CLIENT_SECRET']
     auth = b64encode(bytes(client_id_secret, 'ascii')).decode('ascii')
-    headers = {'Authorization': 'Basic ' + auth}
-    req = urllib.request.Request(url, data, headers, unverifiable=True)
-    response = urllib.request.urlopen(req, context=ctx)
+    basic_header = {'Authorization': 'Basic ' + auth}
+    # Prepare a request
+    req = urllib.request.Request(url, data, basic_header, unverifiable=True)
+    response = urllib.request.urlopen(req, context=untrusted_ssl_ctx)
     json = response.read().decode('utf-8')
     return json
 
