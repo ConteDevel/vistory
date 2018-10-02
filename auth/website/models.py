@@ -20,6 +20,7 @@ import time
 
 from authlib.flask.oauth2.sqla import OAuth2ClientMixin, OAuth2TokenMixin, OAuth2AuthorizationCodeMixin
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import UniqueConstraint, ForeignKey
 from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
@@ -37,6 +38,14 @@ class BaseMixin(object):
                            onupdate=datetime.now, nullable=False)
 
 
+class Role(db.Model, BaseMixin):
+    __tablename__ = 'roles'
+    __table_args__ = (UniqueConstraint('name', 'uq_roles_name'))
+    name = db.Column(db.String(32), nullable=False)
+
+    users = db.relationship("User", back_populates="role")
+
+
 class User(db.Model, BaseMixin):
     __tablename__ = 'users'
     email = db.Column(db.String(255), nullable=False)
@@ -49,7 +58,14 @@ class User(db.Model, BaseMixin):
     locked = db.Column(db.Boolean, default=False, nullable=False)
     deleted = db.Column(db.Boolean, default=False, nullable=False)
     gender = db.Column(db.Enum(Gender), default=None)
-    admin = db.Column(db.Boolean, default=False, nullable=False)
+    role_id = db.Column(
+        db.Integer,
+        ForeignKey('roles.id', onupdate='CASCADE'),
+        nullable=False
+    )
+
+    role = db.relationship("Role", back_populates="users")
+    channels = db.relationship("Channel", back_populates="user")
 
     def get_user_id(self):
         return self.id
@@ -86,6 +102,37 @@ class AuthorizationCode(db.Model, OAuth2AuthorizationCodeMixin):
         db.Integer, db.ForeignKey('users.id', ondelete='CASCADE', onupdate='CASCADE')
     )
     user = db.relationship('User')
+
+
+class Channel(db.Model, BaseMixin):
+    __tablename__ = 'channels'
+    name = db.Column(db.String(32), nullable=False)
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('users.id', ondelete='CASCADE', onupdate='CASCADE'),
+        nullable=False
+    )
+    description = db.Column(db.String(256), nullable=True)
+
+    user = db.relationship('User', back_populates='channels')
+    members = db.relationship('ChannelMember', back_populates='channel')
+
+
+class ChannelMember(db.Model):
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('users.id', ondelete='CASCADE', onupdate='CASCADE'),
+        primary_key=True
+    )
+    channel_id = db.Column(
+        db.Integer,
+        db.ForeignKey('channels.id', ondelete='CASCADE', onupdate='CASCADE'),
+        primary_key=True
+    )
+    created_at = db.Column('created_at', db.DateTime, default=datetime.now, nullable=False)
+
+    user = db.relationship('User')
+    channel = db.relationship('Channel', back_populates='members')
 
 
 def init_app(app):
