@@ -88,7 +88,7 @@ class AuthorizationCode(db.Model, OAuth2AuthorizationCodeMixin):
     user = db.relationship('User')
 
 
-def init_db(app):
+def init_app(app):
     with app.app_context():
         db.init_app(app)
         db.create_all()

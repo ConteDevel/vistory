@@ -15,10 +15,9 @@
     along with Vistory.  If not, see <http://www.gnu.org/licenses/>.
 """
 from flask import request, render_template, session, redirect, Blueprint, url_for
-from sqlalchemy import engine
 
 from website.forms import SignUpForm, SignInForm, ProfileForm
-from website.models import User, db, Gender
+from website.models import User, db
 from website.oauth2 import current_user
 
 bp = Blueprint('account', __name__)

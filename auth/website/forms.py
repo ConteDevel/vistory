@@ -59,8 +59,8 @@ class SignInForm(Form):
 class SignUpForm(ProfileForm, SignInForm):
     confirm = PasswordField('Repeat password', [validators.DataRequired()])
 
-    def to_user(self):
-        user = ProfileForm.to_user(self)
+    def to_user(self, user=None):
+        user = ProfileForm.to_user(self, user)
         user.email = self.email.data
         user.set_password(password=self.password.data)
         return user

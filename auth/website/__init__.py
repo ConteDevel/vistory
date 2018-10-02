@@ -14,3 +14,37 @@
     You should have received a copy of the GNU General Public License
     along with Vistory.  If not, see <http://www.gnu.org/licenses/>.
 """
+import logging
+from os import path
+
+from flask import Flask
+
+from website import routes, oauth2
+from .models import init_app
+
+
+def create_app(config=None):
+    app = Flask(__name__)
+    # load configuration
+    if path.isfile('website/config/production.py'):
+        app.config.from_object('website.config.production')
+    else:
+        app.config.from_object('website.config.default')
+    # load app specified configuration
+    if config is not None:
+        if isinstance(config, dict):
+            app.config.update(config)
+        elif config.endswith('.py'):
+            app.config.from_pyfile(config)
+    init_app(app)
+
+    return app
+
+
+def init_app(app):
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
+    models.init_app(app)
+    oauth2.init_app(app)
+    routes.init_app(app)
