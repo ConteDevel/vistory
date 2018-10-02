@@ -14,13 +14,30 @@
     You should have received a copy of the GNU General Public License
     along with Vistory.  If not, see <http://www.gnu.org/licenses/>.
 """
-from flask_restful import Resource, reqparse, Api
+from authlib.flask.oauth2 import current_token
+from flask_restful import Resource, Api
+from marshmallow import fields
+from webargs.flaskparser import use_args
 
 from website.jsons.base import UserJson, UserPageJson
 from website.models import User
-
+from website.oauth2 import require_oauth
 
 api = Api(prefix='/api')
+
+
+get_users_args = {
+    'page': fields.Int(required=False, missing=1, default=1),
+    'size': fields.Int(required=False, missing=10, default=10)
+}
+
+
+class MeRoutes(Resource):
+
+    @require_oauth()
+    def get(self):
+        user = current_token.user
+        return UserJson(user).to_json()
 
 
 class UserRoutes(Resource):
@@ -32,15 +49,10 @@ class UserRoutes(Resource):
 
 class UserListRoutes(Resource):
 
-    def __init__(self):
-        self.parser = reqparse.RequestParser(bundle_errors=True)
-        self.parser.add_argument('page', type=int, required=False)
-        self.parser.add_argument('size', type=int, required=False)
-
-    def get(self):
-        args = self.parser.parse_args()
-        page = args['page'] if args['page'] else 0
-        size = args['size'] if args['size'] else 10
+    @use_args(get_users_args)
+    def get(self, args):
+        page = args['page']
+        size = args['size']
         query = User.query.order_by(User.first_name, User.last_name)\
             .paginate(page, size, error_out=False)
         return UserPageJson(query.items, page, query.pages).to_json()
@@ -48,5 +60,6 @@ class UserListRoutes(Resource):
 
 def init_app(app):
     api.add_resource(UserListRoutes, '/users')
-    api.add_resource(UserRoutes, '/users/<user_id>')
+    api.add_resource(MeRoutes, '/users/me')
+    api.add_resource(UserRoutes, '/users/<int:user_id>')
     api.init_app(app)

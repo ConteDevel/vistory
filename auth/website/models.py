@@ -20,7 +20,6 @@ import time
 
 from authlib.flask.oauth2.sqla import OAuth2ClientMixin, OAuth2TokenMixin, OAuth2AuthorizationCodeMixin
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import UniqueConstraint, ForeignKey
 from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
@@ -40,10 +39,13 @@ class BaseMixin(object):
 
 class Role(db.Model, BaseMixin):
     __tablename__ = 'roles'
-    __table_args__ = (UniqueConstraint('name', 'uq_roles_name'))
+    __table_args__ = (db.UniqueConstraint('name', name='uq_roles_name'),)
     name = db.Column(db.String(32), nullable=False)
 
     users = db.relationship("User", back_populates="role")
+
+    def __init__(self, name):
+        self.name = name
 
 
 class User(db.Model, BaseMixin):
@@ -60,7 +62,7 @@ class User(db.Model, BaseMixin):
     gender = db.Column(db.Enum(Gender), default=None)
     role_id = db.Column(
         db.Integer,
-        ForeignKey('roles.id', onupdate='CASCADE'),
+        db.ForeignKey('roles.id', onupdate='CASCADE'),
         nullable=False
     )
 
@@ -139,4 +141,10 @@ def init_app(app):
     with app.app_context():
         db.init_app(app)
         db.create_all()
+        role_names = app.config['ROLES']
+        for role_name in role_names:
+            role = Role.query.filter_by(name=role_name).first()
+            if not role:
+                role = Role(role_name)
+                db.session.add(role)
         db.session.commit()

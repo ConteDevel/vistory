@@ -16,7 +16,7 @@
 """
 from functools import wraps
 
-from flask import url_for, request
+from flask import url_for, request, current_app as app
 from werkzeug.utils import redirect
 
 from website.oauth2 import current_user
@@ -35,7 +35,7 @@ def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         user = current_user()
-        if not (user and user.admin):
+        if not (user and user.role.name != app.config['ADMIN_ROLE']):
             return redirect(url_for('account.sign_in', next=request.url))
         return f(*args, **kwargs)
     return decorated_function

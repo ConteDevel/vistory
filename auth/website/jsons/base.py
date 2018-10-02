@@ -44,6 +44,7 @@ class UserJson(BaseJson):
         self.last_name = user.last_name
         self.email = user.email
         self.gender = user.gender
+        self.role = user.role.name
 
 
 class UserPageJson(PageJson):

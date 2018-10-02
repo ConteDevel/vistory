@@ -14,11 +14,12 @@
     You should have received a copy of the GNU General Public License
     along with Vistory.  If not, see <http://www.gnu.org/licenses/>.
 """
-from flask import request, render_template, session, redirect, Blueprint, url_for
+from flask import request, render_template, session, redirect, Blueprint, url_for, current_app as app
 
 from website.forms import SignUpForm, SignInForm, ProfileForm
-from website.models import User, db
+from website.models import User, db, Role
 from website.oauth2 import current_user
+from website.routes.base import login_required
 
 bp = Blueprint('account', __name__)
 
@@ -33,8 +34,7 @@ def sign_in():
         email = form.email.data
         user = User.query.filter_by(email=email).first()
         if not (user and user.check_password(form.password.data)):
-            render_template('account/sign_in.html', form=form,
-                            error_msg='Invalid email or password')
+            render_template('account/sign_in.html', form=form, error_msg='Invalid email or password')
         session['id'] = user.id
         next_url = form.next.data
         if next_url:
@@ -44,6 +44,7 @@ def sign_in():
 
 
 @bp.route('/signout')
+@login_required
 def sign_out():
     del session['id']
     return redirect(url_for('account.sign_in'))
@@ -58,7 +59,9 @@ def sign_up():
     if request.method == 'POST' and form.validate():
         user = User.query.filter_by(email=form.email.data).first()
         if not user:
+            role = Role.query.filter_by(name=app.config['DEFAULT_ROLE']).first()
             user = form.to_user()
+            user.role_id = role.id
             db.session.add(user)
             db.session.commit()
             next_url = form.next.data
@@ -69,6 +72,7 @@ def sign_up():
 
 
 @bp.route('/profile', methods=['GET', 'POST'])
+@login_required
 def profile():
     user = current_user()
     form = ProfileForm(request.form)

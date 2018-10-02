@@ -20,13 +20,16 @@ TESTING = getenv('VIAUTH_TESTING', False)
 DEBUG = getenv('VIAUTH_DEBUG', False)
 SERVER_NAME = getenv('VIAUTH_SERVER_NAME', 'auth.vistory.local')
 SECRET_KEY = getenv('VIAUTH_SECRET_KEY', 'secret')
+ADMIN_ROLE = 'admin'
+DEFAULT_ROLE = 'user'
+ROLES = [ADMIN_ROLE, 'moderator', DEFAULT_ROLE]
 """
     When AUTHLIB_INSECURE_TRANSPORT is enabled Authlib will check if the server
     uses HTTPS.
 """
 AUTHLIB_INSECURE_TRANSPORT = getenv('AUTHLIB_INSECURE_TRANSPORT', '0')
 
-OAUTH2_REFRESH_TOKEN_GENERATOR=True
+OAUTH2_REFRESH_TOKEN_GENERATOR = True
 
 """
     DATABASE SETTINGS
