@@ -14,38 +14,82 @@
     You should have received a copy of the GNU General Public License
     along with Vistory.  If not, see <http://www.gnu.org/licenses/>.
 """
-from flask import request
+from flask_api import status
 from flask_restful import Api, Resource
+from marshmallow import fields
+from webargs.flaskparser import use_args
 
-from website.jsons import PostJson, ChannelPostJson
+from website.jsons.base import PostJson, PostPageJson
 from website.models import Post, db
 
 api = Api(prefix='/api/posts')
-logger = None
+
+put_post_args = {
+    'description': fields.Str(required=False, missing=None, default=None),
+    'blocked': fields.Boolean(required=False, missing=False, default=False)
+}
+
+post_posts_args = {
+    'description': fields.Str(required=False, missing=None, default=None),
+    'user_id': fields.Int(required=True),
+    'type': fields.Str(required=True, validate=lambda t: t == 'image' or t == 'video'),
+    'attachment_id': fields.Int(required=True)
+}
+
+get_posts_args = {
+    'user_id': fields.Int(missing=None, required=False),
+    'page': fields.Int(missing=1, required=False),
+    'size': fields.Int(missing=10, required=False)
+}
 
 
 class PostRoutes(Resource):
+
     def get(self, post_id):
         post = Post.query.filter_by(id=post_id).first()
-        return ChannelPostJson(post).to_json()
+        return PostJson(post).to_json()
+
+    @use_args(put_post_args, locations=['json'])
+    def put(self, args, post_id):
+        post = Post.query.filter_by(id=post_id).first()
+        post.description = args['description']
+        post.blocked = args['blocked']
+        db.session.commit()
+        db.session.flush()
+        return PostJson(post).to_json(), status.HTTP_202_ACCEPTED
+
+    def delete(self, post_id):
+        post = Post.query.filter_by(id=post_id).first()
+        db.session.delete(post)
+        db.session.commit()
+        return '', status.HTTP_204_NO_CONTENT
 
 
 class PostListRoutes(Resource):
-    def post(self):
-        json_data = request.get_json(force=True)
+
+    @use_args(post_posts_args, locations=['json'])
+    def post(self, args):
         post = Post()
-        post.parse(json_data)
+        post.parse(args)
         db.session.add(post)
         db.session.commit()
-        return PostJson(post).to_json()
+        return PostJson(post).to_json(), status.HTTP_201_CREATED
 
-    def get(self):
-        pass
+    @use_args(get_posts_args)
+    def get(self, args):
+        user_id = args['user_id']
+        page = args['page']
+        size = args['size']
+        if user_id:
+            query = Post.query.filter_by(user_id=user_id).order_by(Post.updated_at) \
+                .paginate(page, error_out=True, max_per_page=size)
+            return PostPageJson(query.items, page, query.pages, user_id).to_json()
+        query = Post.query.order_by(Post.updated_at) \
+            .paginate(page, error_out=True, max_per_page=size)
+        return PostPageJson(query.items, page, query.pages).to_json()
 
 
 def init_app(app):
-    global logger
-    logger = app.logger
-    api.add_resource(PostRoutes, '/<post_id>')
+    api.add_resource(PostRoutes, '/<int:post_id>')
     api.add_resource(PostListRoutes, '/')
     api.init_app(app)

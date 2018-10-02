@@ -15,32 +15,11 @@ def serialize(obj):
 
 class BaseJson:
 
-    def __init__(self, t):
-        self.type = t
+    def __init__(self, json_type):
+        self.type = json_type
 
     def to_json(self):
         return json.dumps(self.__dict__, default=serialize)
-
-
-class ErrorJson(BaseJson):
-
-    def __init__(self, code, error, description):
-        BaseJson.__init__(self, 'error')
-        self.code = code
-        self.error = error
-        self.description = description
-
-
-class BadRequestJson(ErrorJson):
-
-    def __init__(self, description):
-        ErrorJson.__init__(self, 400, 'BAD_REQUEST', description)
-
-
-class NotFoundJson(ErrorJson):
-
-    def __init__(self, description):
-        ErrorJson.__init__(self, 404, 'NOT_FOUND', description)
 
 
 class PostJson(BaseJson):
@@ -55,10 +34,24 @@ class PostJson(BaseJson):
         self.attachment_id = post.attachment_id
         self.user_id = post.user_id
         self.blocked = post.blocked
-
-
-class ChannelPostJson(PostJson):
-
-    def __init__(self, post):
-        PostJson.__init__(self, post)
         self.channel_id = post.channel_id
+
+
+class PageJson(BaseJson):
+
+    def __init__(self, json_type, page, pages):
+        BaseJson.__init__(self, json_type)
+        self.items = []
+        self.page = page
+        self.pages = pages
+
+
+class PostPageJson(PageJson):
+
+    def __init__(self, posts, page, pages, user_id=None):
+        PageJson.__init__(self, 'posts', page, pages)
+        if user_id:
+            self.user_id = user_id
+        for post in posts:
+            post_json = PostJson(post)
+            self.items.append(post_json)
