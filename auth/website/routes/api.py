@@ -16,7 +16,7 @@
 """
 from flask_restful import Resource, reqparse, Api
 
-from website.jsons import UserJson, UsersJson
+from website.jsons.base import UserJson, UserPageJson
 from website.models import User
 
 
@@ -27,9 +27,7 @@ class UserRoutes(Resource):
 
     def get(self, user_id):
         user = User.query.filter_by(id=user_id).first()
-        if user:
-            return UserJson(user).to_json()
-        return ErrorJson(404, 'NOT_FOUND', 'User not found.'), 404
+        return UserJson(user).to_json()
 
 
 class UserListRoutes(Resource):
@@ -45,7 +43,7 @@ class UserListRoutes(Resource):
         size = args['size'] if args['size'] else 10
         query = User.query.order_by(User.first_name, User.last_name)\
             .paginate(page, size, error_out=False)
-        return UsersJson(query.items, page, query.pages).to_json()
+        return UserPageJson(query.items, page, query.pages).to_json()
 
 
 def init_app(app):

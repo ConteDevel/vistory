@@ -26,13 +26,13 @@ class BaseJson:
         return json.dumps(self.__dict__, default=serialize)
 
 
-class ErrorJson(BaseJson):
+class PageJson(BaseJson):
 
-    def __init__(self, code, error, description):
-        BaseJson.__init__(self, 'error')
-        self.code = code
-        self.error = error
-        self.description = description
+    def __init__(self, json_type, page, pages):
+        BaseJson.__init__(self, json_type)
+        self.items = []
+        self.page = page
+        self.pages = pages
 
 
 class UserJson(BaseJson):
@@ -46,13 +46,12 @@ class UserJson(BaseJson):
         self.gender = user.gender
 
 
-class UsersJson(BaseJson):
+class UserPageJson(PageJson):
 
     def __init__(self, users, page, pages):
-        BaseJson.__init__(self, 'users')
-        self.users = []
+        PageJson.__init__(self, 'users', page, pages)
         self.page = page
         self.pages = pages
         for user in users:
-            self.users.append(UserJson(user))
+            self.items.append(UserJson(user))
 
