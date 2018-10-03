@@ -35,7 +35,7 @@ def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         user = current_user()
-        if not (user and user.role.name != app.config['ADMIN_ROLE']):
+        if not (user and user.role.name == app.config['ADMIN_ROLE']):
             return redirect(url_for('account.sign_in', next=request.url))
         return f(*args, **kwargs)
     return decorated_function

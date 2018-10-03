@@ -13,3 +13,13 @@ function initOAuth2() {
     console.log('access_token = ' + accessToken);
     return accessToken !== null || refreshToken();
 }
+
+
+function getMe() {
+    let config = {
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+        }
+    };
+    return axios.get('/api/users/me', config);
+}

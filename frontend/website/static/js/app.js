@@ -25,6 +25,9 @@ let app = new Vue({
         window.hasAccessToken = initOAuth2();
         this.signed = window.hasAccessToken;
         this.mainTitle = this.sections[this.selectedIndex].title;
+        if (this.signed) {
+            getMe().then(response => (console.log(response)));
+        }
     },
     el: '#page',
     components: {
