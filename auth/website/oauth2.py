@@ -17,7 +17,7 @@
 from authlib.common.security import generate_token
 from authlib.flask.oauth2 import AuthorizationServer, ResourceProtector
 from authlib.flask.oauth2.sqla import create_revocation_endpoint, create_bearer_token_validator
-from authlib.specs.rfc6749 import grants, OAuth2Token
+from authlib.specs.rfc6749 import grants
 from flask import session
 
 from website.models import Client, Token, db, User, AuthorizationCode
@@ -118,8 +118,8 @@ def init_app(app):
     server.register_grant(PasswordGrant)
     server.register_grant(RefreshTokenGrant)
     # support revocation
-    revocation_cls = create_revocation_endpoint(db.session, OAuth2Token)
+    revocation_cls = create_revocation_endpoint(db.session, Token)
     server.register_endpoint(revocation_cls)
     # protect resource
-    bearer_cls = create_bearer_token_validator(db.session, OAuth2Token)
+    bearer_cls = create_bearer_token_validator(db.session, Token)
     require_oauth.register_token_validator(bearer_cls())

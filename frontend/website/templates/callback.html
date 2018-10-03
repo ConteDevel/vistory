@@ -9,8 +9,7 @@
     <body>
         <script type="application/javascript">
             document.addEventListener('DOMContentLoaded', function() {
-                const tokenResponse = {{ token|tojson }};
-                let token = JSON.parse(tokenResponse);
+                let token = {{ token|tojson }};
                 if (token.hasOwnProperty('access_token')) {
                     localStorage.setItem('access_token', token['access_token']);
                 }

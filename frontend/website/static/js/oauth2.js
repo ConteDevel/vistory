@@ -18,7 +18,7 @@ function initOAuth2() {
 function getMe() {
     let config = {
         headers: {
-            'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+            'Authorization': btoa('Bearer ' + localStorage.getItem('access_token'))
         }
     };
     return axios.get('/api/users/me', config);

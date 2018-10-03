@@ -27,7 +27,7 @@ def get_auth_header(auth):
 
 
 def get_content(response):
-    return json.loads(response.data.decode('utf-8')), response.data.status
+    return json.loads(response.data.decode('utf-8')), response.status
 
 
 def get(url, auth=None):
@@ -38,5 +38,8 @@ def get(url, auth=None):
 
 def post(url, fields=None, body=None, auth=None):
     auth_header = get_auth_header(auth)
-    response = http.request('POST', url, headers=auth_header, fields=fields, body=body)
+    if fields:
+        response = http.request('POST', url, headers=auth_header, fields=fields)
+    else:
+        response = http.request('POST', url, headers=auth_header, body=body)
     return get_content(response)

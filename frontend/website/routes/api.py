@@ -6,7 +6,7 @@ from webargs.flaskparser import use_args
 from website import sender
 
 bearer_args = {
-    'Authorization': fields.Str(required=True, validate=lambda b: b.startswith('Bearer '))
+    'Authorization': fields.Str(required=True)
 }
 
 
