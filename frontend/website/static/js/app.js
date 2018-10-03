@@ -26,15 +26,30 @@ let app = new Vue({
         this.signed = window.hasAccessToken;
         this.mainTitle = this.sections[this.selectedIndex].title;
         if (this.signed) {
-            getMe().then(response => (console.log(response)));
+            getMe().then(response => {
+                if (response.status === 200) {
+                    let user = JSON.parse(response.data);
+                    if (user.type === 'user') {
+                        this.username = user.first_name + ' ' + user.last_name;
+                    }
+                }
+            });
         }
     },
     el: '#page',
     components: {
-        'right-menu-item': rightMenuItem
+        'right-menu-item': rightMenuItem,
+        'profile': httpVueLoader('/pages/profile.vue'),
+        'posts': httpVueLoader('/pages/posts.vue'),
+        'people': httpVueLoader('/pages/people.vue'),
+        'channels': httpVueLoader('/pages/channels.vue'),
+        'search_results': httpVueLoader('/pages/search_results.vue'),
+        'new_post': httpVueLoader('/pages/new_post.vue'),
+        'new_channel': httpVueLoader('/pages/new_channel.vue'),
     },
     data: {
         signed: window.hasAccessToken,
+        username: 'User',
         sections: [
             {id: 'profile', title: 'Profile', icon: 'fa-user'},
             {id: 'posts', title: 'Posts', icon: 'fa-images'},
@@ -44,13 +59,12 @@ let app = new Vue({
         selectedIndex: 1,
         mainTitle: null,
         searchRequest: null,
-        content: ''
+        content: 'posts'
     },
     methods: {
-        loadPage: function(title, url) {
+        loadPage: function(title, id) {
             this.mainTitle = title;
-            axios.get(url)
-                .then(response => (this.content = response.data));
+            this.content = id;
         },
         /**
         * On right menu item selected listener
@@ -59,19 +73,19 @@ let app = new Vue({
             this.selectedIndex = index;
             let title = this.sections[index].title;
             let id = this.sections[index].id;
-            this.loadPage(title, '/pages/' + id);
+            this.loadPage(title, id);
         },
         onSearch: function() {
             if (this.searchRequest) {
                 let title = 'Search results for \"' + this.searchRequest + '\"...';
-                this.loadPage(title, '/pages/search_results');
+                this.loadPage(title, 'search_results');
             }
         },
         onNewPost: function() {
-            this.loadPage('New post', '/pages/new_post');
+            this.loadPage('New post', 'new_post');
         },
         onNewChannel: function() {
-            this.loadPage('New channel', '/pages/new_channel');
+            this.loadPage('New channel', 'new_channel');
         }
     }
 });

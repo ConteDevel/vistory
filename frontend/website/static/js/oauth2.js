@@ -10,7 +10,6 @@ function refreshToken() {
 
 function initOAuth2() {
     let accessToken = localStorage.getItem('access_token');
-    console.log('access_token = ' + accessToken);
     return accessToken !== null || refreshToken();
 }
 
@@ -18,7 +17,7 @@ function initOAuth2() {
 function getMe() {
     let config = {
         headers: {
-            'Authorization': btoa('Bearer ' + localStorage.getItem('access_token'))
+            'Authorization': 'Bearer ' + localStorage.getItem('access_token')
         }
     };
     return axios.get('/api/users/me', config);

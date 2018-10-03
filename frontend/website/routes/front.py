@@ -20,13 +20,13 @@ from website.jsons.errors import ErrorJson
 
 bp = Blueprint('bp', __name__)
 PAGES = [
-    'new_post',
-    'new_channel',
-    'search_results',
-    'profile',
-    'posts',
-    'people',
-    'channels'
+    'new_post.vue',
+    'new_channel.vue',
+    'search_results.vue',
+    'profile.vue',
+    'posts.vue',
+    'people.vue',
+    'channels.vue'
 ]
 
 
@@ -41,4 +41,4 @@ def home():
 def get_page(page_name):
     if page_name not in PAGES:
         return ErrorJson(404, 'NOT_FOUND', 'Requested page not found.').to_json(), 404
-    return render_template('pages/%s.html' % page_name)
+    return render_template('pages/%s' % page_name)

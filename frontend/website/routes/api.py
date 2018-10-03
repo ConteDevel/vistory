@@ -16,3 +16,10 @@ class MeRoutes(Resource):
     def get(self, args):
         url = app.config['AUTH_SERVICE'] + '/api/users/me'
         return sender.get(url, args['Authorization'])
+
+
+class UserListRoutes(Resource):
+
+    def get(self):
+        url = app.config['AUTH_SERVICE'] + '/api/users'
+        return sender.get(url)

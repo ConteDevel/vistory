@@ -17,6 +17,7 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='css/bulma.css') }}">
         <link href="{{ url_for('static', filename='fontawesome/css/all.css') }}" rel="stylesheet">
         <script type="application/javascript" src="{{ url_for('static', filename='js/vue.js') }}" defer></script>
+        <script type="application/javascript" src="{{ url_for('static', filename='js/httpVueLoader.js') }}" defer></script>
         <script type="application/javascript" src="{{ url_for('static', filename='js/axios.js') }}" defer></script>
         <script type="application/javascript" src="{{ url_for('static', filename='js/oauth2.js') }}" defer></script>
         <script type="application/javascript" src="{{ url_for('static', filename='js/app.js') }}" defer></script>
@@ -33,9 +34,7 @@
                     <div class="columns vi-offset-top-xs">
                         <div class="column" style="overflow-y: auto;">
                             <h1 class="title">{( mainTitle )}</h1>
-                            <div v-html="content">
-
-                            </div>
+                            <component :is="content"></component>
                         </div>
                         <div id="rightBar" class="column is-3" v-if="signed">
                             <div class="box">
