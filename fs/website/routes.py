@@ -24,7 +24,7 @@ from werkzeug.utils import secure_filename
 from website.jsons import ErrorJson, ImageJson, VideoJson
 from website.models import Image, db, Video
 
-api = Api()
+api = Api(prefix='/api')
 bp = Blueprint('bp', __name__)
 logger = None
 img_exts = None
@@ -45,7 +45,7 @@ def is_allowed_video(file):
     return False
 
 
-@bp.route('/images/<img_id>/file')
+@bp.route('/api/images/<img_id>/file')
 def download_img(img_id):
     image = Image.query.filter_by(id=img_id).first()
     if image is not None:
@@ -57,7 +57,7 @@ def download_img(img_id):
     return ErrorJson(404, 'NOT_FOUND', 'Image not found.').to_json(), 404
 
 
-@bp.route('/videos/<video_id>/file')
+@bp.route('/api/videos/<video_id>/file')
 def download_video(video_id):
     video = Video.query.filter_by(id=video_id).first()
     if video is not None:
