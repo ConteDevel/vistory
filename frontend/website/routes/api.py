@@ -23,3 +23,10 @@ class UserListRoutes(Resource):
     def get(self):
         url = app.config['AUTH_SERVICE'] + '/api/users'
         return sender.get(url)
+
+
+class PostListRoutes(Resource):
+
+    def get(self):
+        url = app.config['POSTS_SERVICE'] + '/api/posts'
+        return sender.get(url)

@@ -116,7 +116,7 @@ class LikeRoutes(Resource):
 
 
 def init_app(app):
-    api.add_resource(LikeRoutes, '/<int:post_id>/likes/')
+    api.add_resource(LikeRoutes, '/<int:post_id>/likes')
     api.add_resource(PostRoutes, '/<int:post_id>')
-    api.add_resource(PostListRoutes, '/')
+    api.add_resource(PostListRoutes, '')
     api.init_app(app)
