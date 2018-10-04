@@ -62,6 +62,15 @@ let app = new Vue({
         content: 'posts'
     },
     methods: {
+        signOut: function() {
+            if (localStorage.hasOwnProperty('access_token')) {
+                localStorage.removeItem('access_token');
+            }
+            if (localStorage.hasOwnProperty('refresh_token')) {
+                localStorage.removeItem('refresh_token');
+            }
+            window.location.reload();
+        },
         loadPage: function(title, id) {
             this.mainTitle = title;
             this.content = id;

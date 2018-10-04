@@ -15,12 +15,12 @@
             <div v-if="signed" class="navbar-item has-dropdown is-hoverable">
                 <a class="navbar-link">{( username )}</a>
                 <div class="navbar-dropdown is-boxed">
-                    <a class="navbar-item" href="#">Exit</a>
+                    <a class="navbar-item" v-on:click="signOut" href="#">Exit</a>
                 </div>
             </div>
             <template v-else>
                 <div class="navbar-item">
-                    <a class="navbar-item button is-primary" href="{{ sign_in_url }}">Sign in</a>
+                    <a class="button is-primary" href="{{ sign_in_url }}">Sign in</a>
                 </div>
             </template>
         </div>
