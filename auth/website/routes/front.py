@@ -34,7 +34,7 @@ def home():
         clients = Client.query.filter_by(user_id=user.id).all()
         form = ClientForm(request.form)
         return render_template("home.html", user=user, clients=clients, form=form)
-    return redirect(app.config['FRONT_SERVICE'])
+    return render_template("home.html", user=user)
 
 
 @bp.route('/create_client', methods=['POST'])

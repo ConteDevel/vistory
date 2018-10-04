@@ -40,7 +40,7 @@ def sign_in():
         next_url = form.next.data
         if next_url:
             return redirect(next_url)
-        return url_for('front.home')
+        return redirect(url_for('front.home'))
     return render_template('account/sign_in.html', form=form)
 
 

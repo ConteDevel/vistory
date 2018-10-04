@@ -1,16 +1,17 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div class="columns">
-        <div class="column is-half-desktop">
-            {% include 'forms/create_client_form.html' %}
+    {% if user.role.name == config['ADMIN_ROLE'] %}
+        <div class="columns">
+            <div class="column is-half-desktop">
+                {% include 'forms/create_client_form.html' %}
+            </div>
         </div>
-    </div>
-    <br>
-    <h1 class="title">Clients</h1>
-    {% if clients %}
-        <div class="vi-table-wrapper">
-            <table class="table">
-                <thead>
+        <br>
+        <h1 class="title">Clients</h1>
+        {% if clients %}
+            <div class="vi-table-wrapper">
+                <table class="table">
+                    <thead>
                     <tr>
                         <th>Name</th>
                         <th>ID</th>
@@ -18,8 +19,8 @@
                         <th>URI</th>
                         <th>Redirect URI</th>
                     </tr>
-                </thead>
-                <tfoot>
+                    </thead>
+                    <tfoot>
                     <tr>
                         <th>Name</th>
                         <th>ID</th>
@@ -27,21 +28,22 @@
                         <th>URI</th>
                         <th>Redirect URI</th>
                     </tr>
-                </tfoot>
-                <tbody>
+                    </tfoot>
+                    <tbody>
                     {% for client in clients %}
-                    <tr>
-                        <th>{{ client.client_name }}</th>
-                        <td>{{ client.client_id }}</td>
-                        <td>{{ client.client_secret }}</td>
-                        <td>{{ client.client_uri }}</td>
-                        <td>{{ client.redirect_uri }}</td>
-                    </tr>
+                        <tr>
+                            <th>{{ client.client_name }}</th>
+                            <td>{{ client.client_id }}</td>
+                            <td>{{ client.client_secret }}</td>
+                            <td>{{ client.client_uri }}</td>
+                            <td>{{ client.redirect_uri }}</td>
+                        </tr>
                     {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    {% else %}
-        <p class="has-text-info">No clients</p>
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="has-text-info">No clients</p>
+        {% endif %}
     {% endif %}
 {% endblock %}
