@@ -1,20 +1,21 @@
 <template>
-    <div>
-        <div v-for="item in items" class="box">
-            <div class="card-image">
-                <figure class="image is-4by3">
-                    <img :src="fs_url + item.attachment_id + '/file'" alt="Placeholder image">
-                </figure>
-            </div>
-            <div class="card-content">
-                <div class="content">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Phasellus nec iaculis mauris. <a>@bulmaio</a>.
-                    <a href="#">#css</a> <a href="#">#responsive</a>
-                    <br>
-                    <time>{( item.updated_at )}</time>
+    <div class="tile is-ancestor">
+        <div v-for="item in items" class="tile is-parent">
+            <article class="tile is-child">
+                <div class="box">
+                    <div class="card-image">
+                        <figure class="image is-4by3" style="max-height: 320px;">
+                            <img :src="fs_url + item.attachment_id + '/file'" alt="Placeholder image"
+                                 style="object-fit: cover;">
+                        </figure>
+                    </div>
+                    <div class="card-content">
+                    </div>
+                    <div class="card-footer">
+                        <a href="#" class="card-footer-item">Like: {( item.likes )}</a>
+                    </div>
                 </div>
-            </div>
+            </article>
         </div>
     </div>
 </template>

@@ -34,7 +34,8 @@ def sign_in():
         email = form.email.data
         user = User.query.filter_by(email=email).first()
         if not (user and user.check_password(form.password.data)):
-            render_template('account/sign_in.html', form=form, error_msg='Invalid email or password')
+            return render_template('account/sign_in.html', form=form,
+                                   error_msg='Invalid email or password')
         session['id'] = user.id
         next_url = form.next.data
         if next_url:
@@ -58,7 +59,9 @@ def sign_up():
         form.next.data = next_url
     if request.method == 'POST' and form.validate():
         user = User.query.filter_by(email=form.email.data).first()
-        if not user:
+        if user:
+            form.email.errors.append('This email already exists.')
+        else:
             role = Role.query.filter_by(name=app.config['DEFAULT_ROLE']).first()
             user = form.to_user()
             user.role_id = role.id

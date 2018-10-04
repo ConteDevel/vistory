@@ -2,7 +2,9 @@
 <div class="box">
     {% include 'mini_header.html' %}
     {% if error_msg %}
-        <p class="is-danger">{{ error_msg }}</p>
+        <article class="message is-danger">
+            <div class="message-body">{{ error_msg }}</div>
+        </article>
     {% endif %}
     <form action="{{ url_for('account.sign_in') }}" method="post" class="vi-offset-top-sm">
         {{ form.next }}
