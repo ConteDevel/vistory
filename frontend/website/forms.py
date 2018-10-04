@@ -1,4 +1,12 @@
-from flask_wtf import RecaptchaField
-from wtforms import Form, StringField, validators, PasswordField, DateField, SelectField, BooleanField, HiddenField
-from wtforms.fields.html5 import EmailField, TelField
-from wtforms.widgets.html5 import DateInput
+from flask_wtf import FlaskForm
+from flask_wtf.file import FileRequired, FileAllowed
+from wtforms import StringField, validators, HiddenField, FileField
+
+
+class NewPostForm(FlaskForm):
+    description = StringField('Description', [validators.Length(max=256)])
+    file = FileField(validators=[
+        FileRequired(),
+        FileAllowed(['jpg', 'jpeg', 'png', 'mp4'], 'Images and videos only!')
+    ])
+    channel_id = HiddenField()

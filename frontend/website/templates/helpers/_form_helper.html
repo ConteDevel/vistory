@@ -1,25 +1,27 @@
 {% macro render_field(field) %}
     <div class="field">
         <div class="control has-icons-left">
-            {{ field(class_='input', placeholder=field.label.text, **kwargs)|safe }}
+            {% if field.type == 'FileField' %}
+                {{ field(class_='input is-danger' if field.errors else 'input', placeholder=field.label.text, **{'@change': 'processFile($event)' })|safe }}
+            {% else %}
+                {{ field(class_='input is-danger' if field.errors else 'input', placeholder=field.label.text, **{'v-model': field.name })|safe }}
+            {% endif %}
             <span class="icon is-small is-left">
                 {% if field.type == 'EmailField' %}
-                <i class="fas fa-envelope"></i>
-                {% elif field.type == 'TelField'  %}
-                <i class="fas fa-mobile"></i>
+                    <i class="fas fa-envelope"></i>
+                {% elif field.type == 'TelField' %}
+                    <i class="fas fa-mobile"></i>
                 {% elif field.type == 'PasswordField' %}
-                <i class="fas fa-lock"></i>
+                    <i class="fas fa-lock"></i>
                 {% elif field.type == 'DateField' %}
-                <i class="fas fa-calendar"></i>
+                    <i class="fas fa-calendar"></i>
                 {% endif %}
             </span>
         </div>
         {% if field.errors %}
-        <ul class=errors>
             {% for error in field.errors %}
-            <li>{{ error }}</li>
+                <p class="help is-danger">{{ error }}</p>
             {% endfor %}
-        </ul>
         {% endif %}
     </div>
 {% endmacro %}
