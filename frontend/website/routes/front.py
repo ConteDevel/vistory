@@ -14,17 +14,20 @@
     You should have received a copy of the GNU General Public License
     along with Vistory.  If not, see <http://www.gnu.org/licenses/>.
 """
+import json
 from os import path
 
 import requests
 from flask import render_template, Blueprint, current_app as cur_app, request
+from marshmallow import fields
+from webargs.flaskparser import use_args
 
-from website.forms import NewPostForm
+from website import sender
+from website.forms import NewPostForm, NewChannelForm
 from website.jsons.errors import ErrorJson, UnprocessableEntityJson
 
 bp = Blueprint('bp', __name__)
 PAGES = [
-    'new_channel.vue',
     'search_results.vue',
     'profile.vue',
     'posts.vue',
@@ -33,6 +36,9 @@ PAGES = [
 ]
 IMG_ALLOWED_EXTENSIONS = {'.png', '.jpg', '.jpeg'}
 VIDEO_ALLOWED_EXTENSIONS = {'.mp4'}
+bearer_args = {
+    'Authorization': fields.Str(required=False)
+}
 
 
 def get_file_type(file):
@@ -49,6 +55,22 @@ def home():
     sign_in_url = '{0}/oauth/authorize?client_id={1}&response_type=code&state={2}'\
         .format(cur_app.config['AUTH_SERVICE'], cur_app.config['CLIENT_ID'], cur_app.config['SECRET_KEY'])
     return render_template("home.html", sign_in_url=sign_in_url)
+
+
+@bp.route('/pages/new_channel.vue', methods=['GET', 'POST'])
+@use_args(bearer_args, locations=['headers'])
+def new_channel(args):
+    form = NewChannelForm(request.form)
+    if request.method == 'POST' and form.validate():
+        url = cur_app.config['AUTH_SERVICE'] + '/api/channels'
+        data = json.dumps({'name': form.name.data, 'description': form.description.data})
+        headers = {
+            'Auhtorization':  args['Authorization'],
+            'Content-Type': 'application/json'
+        }
+        return sender.post(url, headers=headers, body=data)
+
+    return render_template('pages/new_channel.vue', form=form)
 
 
 @bp.route('/pages/new_post.vue', methods=['GET', 'POST'])

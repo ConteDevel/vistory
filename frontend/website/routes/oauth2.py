@@ -37,5 +37,6 @@ def callback():
         'state': state
     }
     auth = to_basic(app.config['CLIENT_ID'], app.config['CLIENT_SECRET'])
-    token, _ = sender.post(url, fields=fields, auth=auth)
+    headers = {'Authorization': auth}
+    token, _ = sender.post(url, fields=fields, headers=headers)
     return render_template("callback.html", token=token)

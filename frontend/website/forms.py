@@ -10,3 +10,8 @@ class NewPostForm(FlaskForm):
         FileAllowed(['jpg', 'jpeg', 'png', 'mp4'], 'Images and videos only!')
     ])
     channel_id = HiddenField()
+
+
+class NewChannelForm(FlaskForm):
+    name = StringField('Name', [validators.Length(max=32)])
+    description = StringField('Description', [validators.Length(max=256)])

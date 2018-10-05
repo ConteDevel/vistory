@@ -1,7 +1,6 @@
 # Create a SSL context to accept not-trusted certificates
 import json
 import ssl
-import urllib.request
 from base64 import b64encode
 
 import urllib3
@@ -30,16 +29,14 @@ def get_content(response):
     return json.loads(response.data.decode('utf-8')), response.status
 
 
-def get(url, auth=None):
-    auth_header = get_auth_header(auth)
-    response = http.request('GET', url, headers=auth_header)
+def get(url, headers=None):
+    response = http.request('GET', url, headers=headers)
     return get_content(response)
 
 
-def post(url, fields=None, body=None, auth=None):
-    auth_header = get_auth_header(auth)
+def post(url, fields=None, body=None, headers=None):
     if fields:
-        response = http.request('POST', url, headers=auth_header, fields=fields)
+        response = http.request('POST', url, headers=headers, fields=fields)
     else:
-        response = http.request('POST', url, headers=auth_header, body=body)
+        response = http.request('POST', url, headers=headers, body=body)
     return get_content(response)
