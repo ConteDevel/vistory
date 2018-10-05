@@ -93,9 +93,10 @@ class UserListRoutes(Resource):
     def get(self, args):
         page = args['page']
         size = args['size']
-        search = '%' + args['search'] + '%'
+        search = args['search']
         query = User.query
         if search:
+            search = '%' + search + '%'
             query = query.filter(or_(
                 User.first_name.ilike(search),
                 User.last_name.ilike(search),
@@ -117,15 +118,16 @@ class ChannelListRoutes(Resource):
         channel.user_id = current_token.user.id
         db.session.commit()
         db.session.flush()
-        return ChannelJson(channel).to_json(), status.HTTP_202_ACCEPTED
+        return ChannelJson(channel).to_json(), status.HTTP_201_CREATED
 
     @use_args(get_args)
     def get(self, args):
         page = args['page']
         size = args['size']
-        search = '%' + args['search'] + '%'
+        search = args['search']
         query = Channel.query
         if search:
+            search = '%' + search + '%'
             query = query.filter(Channel.name.ilike(search))
         query = query.order_by(Channel.name, desc(Channel.created_at))\
             .paginate(page, max_per_page=size, error_out=True)
