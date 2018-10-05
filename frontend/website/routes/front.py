@@ -47,7 +47,7 @@ def get_file_type(file):
         return 'image'
     if extension in VIDEO_ALLOWED_EXTENSIONS:
         return 'video'
-    raise UnprocessableEntityJson('Unsupported file type.')
+    return False
 
 
 @bp.route('/')
@@ -80,6 +80,8 @@ def new_post():
     if request.method == 'POST' and form.validate():
         file = form.file.data
         f_type = get_file_type(file)
+        if not f_type:
+            return UnprocessableEntityJson('Unsupported file type.').to_json(), 422
         files = {f_type: file.read()}
         fs_url = cur_app.config['FS_SERVICE'] + '/api/' + f_type + 's'
         response = requests.post(fs_url, files=files)
