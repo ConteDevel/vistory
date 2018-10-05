@@ -20,6 +20,7 @@ import time
 
 from authlib.flask.oauth2.sqla import OAuth2ClientMixin, OAuth2TokenMixin, OAuth2AuthorizationCodeMixin
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
@@ -118,6 +119,10 @@ class Channel(db.Model, BaseMixin):
 
     user = db.relationship('User', back_populates='channels')
     members = db.relationship('ChannelMember', back_populates='channel')
+
+    @hybrid_property
+    def num_members(self):
+        return len(self.members)
 
 
 class ChannelMember(db.Model):

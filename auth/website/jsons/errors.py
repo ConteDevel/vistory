@@ -32,3 +32,9 @@ class InternalServerErrorJson(ErrorJson):
 
     def __init__(self, messages):
         ErrorJson.__init__(self, 500, 'INTERNAL_SERVER_ERROR', messages)
+
+
+class MethodNotAllowedJson(ErrorJson):
+
+    def __init__(self, messages):
+        ErrorJson.__init__(self, 405, 'METHOD_NOT_ALLOWED', messages)
